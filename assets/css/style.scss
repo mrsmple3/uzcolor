@@ -1,0 +1,113 @@
+body {
+	position: relative;
+	font-family: "Aeonik TRIAL", sans-serif;
+	font-style: normal;
+	font-weight: normal;
+	font-optical-sizing: auto;
+	background: #fff;
+	overflow-x: hidden;
+	transition: all 0.15s;
+
+	&.overflow-hidden {
+		overflow: hidden;
+	}
+}
+
+img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+input {
+	outline: none;
+}
+
+main {
+	position: relative;
+	width: 100%;
+	.main-slider__pagination {
+		position: absolute;
+		bottom: size(28px) !important;
+		z-index: 8;
+		text-align: center;
+
+		.swiper-pagination-bullet {
+			background: linear-gradient(90deg, #242848 0%, #5761ae 100%);
+			transition: all 0.3s;
+		}
+
+		.swiper-pagination-bullet-active {
+			width: size(28px);
+			border-radius: 100px;
+		}
+	}
+
+	.main-slider {
+		width: 100%;
+		height: 100%;
+	}
+
+	.btn-prev,
+	.btn-next {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: size(49px);
+		height: size(49px);
+		@include flex-center();
+		justify-content: center;
+		background: #fff;
+		border-radius: 9999px;
+		z-index: 6;
+		cursor: pointer;
+	}
+
+	.btn-prev {
+		left: size(37px);
+	}
+
+	.btn-next {
+		right: size(37px);
+	}
+
+	.main-slider__item {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+
+		.main__slider__img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+
+.block-title {
+	max-width: 100%;
+	@include flex-col-start();
+	gap: size(9px);
+
+	.block-title__title {
+		color: #484848;
+		font-size: size(36px);
+		font-weight: 400;
+		word-wrap: break-word;
+		span {
+			color: #5660ac;
+		}
+		@media screen and (max-width: 1050px) {
+			font-size: 24px;
+		}
+	}
+
+	.block-title__span {
+		color: rgba(0, 0, 0, 0.3);
+		font-size: size(14px);
+		font-weight: 400;
+		word-wrap: break-word;
+		@media screen and (max-width: 1050px) {
+			font-size: 14px;
+		}
+	}
+}
