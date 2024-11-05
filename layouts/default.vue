@@ -1,12 +1,14 @@
 <template>
   <div :style="{ paddingTop: `${headerHeight}px` }" class="layout">
     <HeaderComponent/>
-    <slot/>..
-		
+    <slot/>
+    <FooterComponent/>
   </div>
 </template>
 
 <script lang="ts" setup>
+import FooterComponent from "~/components/FooterComponent.vue";
+
 function updateHeaderHeight() {
   const headerElement = document.querySelector('.header');
   if (headerElement) {
@@ -25,5 +27,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .layout {
   position: relative;
+  width: 100%;
 }
 </style>

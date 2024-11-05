@@ -1,6 +1,6 @@
 <template>
   <div class="header w-full flex flex-col">
-    <header>
+    <header class="!bg-primary">
       <NuxtLink to="/">
         <NuxtImg class="logo" src="/logo.svg"/>
       </NuxtLink>
@@ -21,7 +21,7 @@
           <UIcon class="social-media-icon" name="entypo-social:vk-with-circle"/>
         </NuxtLink>
         <NuxtLink class="social-media__item" to="/">
-          <UIcon class="social-media-icon" name="mage:whatsapp-filled"/>
+          <NuxtImg class="social-media-icon" src="/imgs/icons/socialmedia-maincolor-3.svg"/>
         </NuxtLink>
       </div>
       <UDropdown :items="items" :popper="{ placement: 'bottom-start' }" class="lang">
@@ -38,7 +38,7 @@
       <div class="flex items-center gap-2.5">
         <NuxtImg alt="" class="w-6 h-6" src="/imgs/icons/phone.svg"/>
         <div class="flex flex-col items-start">
-          <NuxtLink class="text-[#242848] text-base font-normal" to="tel:+998 90 999-99-99">
+          <NuxtLink class="phone" to="tel:+998 90 999-99-99">
             +998 90 999-99-99
           </NuxtLink>
           <span class="text-[#727272] text-xs font-normal">Заказать звонок</span>
@@ -49,12 +49,17 @@
         <NuxtLink class="actions" to="/">
           <NuxtImg src="/imgs/icons/profile.svg"/>
         </NuxtLink>
-        <NuxtLink class="actions" to="/">
-          <NuxtImg src="/imgs/icons/like.svg"/>
-        </NuxtLink>
-        <NuxtLink class="actions" to="/">
-          <NuxtImg src="/imgs/icons/cart.svg"/>
-        </NuxtLink>
+        <UChip class="action__chip" color="red" position="bottom-right" size="2xl" text="1">
+          <NuxtLink class="actions" to="/">
+            <NuxtImg src="/imgs/icons/like.svg"/>
+          </NuxtLink>
+        </UChip>
+        <UChip class="action__chip" color="red" position="bottom-right" size="2xl" text="23">
+          <NuxtLink class="actions" to="/">
+            <NuxtImg src="/imgs/icons/cart.svg"/>
+          </NuxtLink>
+        </UChip>
+
       </div>
     </header>
     <div class="header__bottom">
@@ -259,6 +264,14 @@ const menu = ref([
   z-index: 100;
 }
 
+.phone {
+  color: #242848;
+  font-size: size(16px);
+  font-weight: 400;
+  word-wrap: break-word;
+  white-space: nowrap;
+}
+
 header {
   @include main-container();
   @include flex-center();
@@ -269,6 +282,8 @@ header {
 }
 
 .logo {
+  min-width: max-content;
+  min-height: max-content;
   width: size(201px);
   height: size(26.61px);
 }
@@ -372,6 +387,7 @@ header {
     font-size: size(14px);
     font-weight: 400;
     word-wrap: break-word;
+    white-space: nowrap;
 
     &:first-child {
       padding-left: size(120px);

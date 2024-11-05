@@ -299,14 +299,23 @@ function changeProductMaterial(material: string, id: number) {
   gap: size(60px);
   padding-top: size(160px);
   margin-bottom: size(110px);
+  @media screen and (max-width: 1050px) {
+    padding-top: 56px;
+    padding-bottom: 67px;
+    gap: 42px;
+  }
 }
 
 .catalog__container {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  column-gap: 20px;
-  row-gap: 24px;
+  column-gap: size(20px);
+  row-gap: size(24px);
+  @media screen and (max-width: 1050px) {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 12px;
+  }
 
   .catalog__item {
     position: relative;
@@ -317,6 +326,10 @@ function changeProductMaterial(material: string, id: number) {
     padding: size(110px) size(30px) size(30px);
     border-radius: $border-radius;
     overflow: hidden;
+    @media screen and (max-width: 1050px) {
+      gap: 10px;
+      padding: 104px 18px 18px;
+    }
 
     .item__img {
       position: absolute;
@@ -331,6 +344,9 @@ function changeProductMaterial(material: string, id: number) {
       font-size: size(14px);
       font-weight: 400;
       word-wrap: break-word;
+      @media screen and (max-width: 1050px) {
+        font-size: 14px;
+      }
     }
 
     .item__title {
@@ -338,6 +354,9 @@ function changeProductMaterial(material: string, id: number) {
       font-size: size(20px);
       font-weight: 400;
       word-wrap: break-word;
+      @media screen and (max-width: 1050px) {
+        font-size: 20px;
+      }
     }
   }
 }
@@ -349,6 +368,10 @@ function changeProductMaterial(material: string, id: number) {
   @include flex-col-start();
   gap: size(40px);
   margin-bottom: size(110px);
+  @media screen and (max-width: 1050px) {
+    gap: 42px;
+    margin-bottom: 87px;
+  }
 }
 
 .slider__replacer {
@@ -369,6 +392,9 @@ function changeProductMaterial(material: string, id: number) {
     box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     transition: all 0.3s;
+    @media screen and (max-width: 1050px) {
+      display: none;
+    }
 
     &.swiper-button-disabled {
       width: 0;
@@ -393,23 +419,42 @@ function changeProductMaterial(material: string, id: number) {
   @include main-container();
   @include flex-col-start();
   margin-bottom: size(47px);
+  @media screen and (max-width: 1050px) {
+    margin-bottom: 40px;
+  }
 
   .flex-center {
     width: 100%;
     justify-content: space-between;
     margin-bottom: size(57px);
+    @media screen and (max-width: 1050px) {
+      margin-bottom: 54px;
+    }
   }
 
   .about__title {
     width: 48%;
+    @media screen and (max-width: 1050px) {
+      width: 100%;
+    }
+
   }
 
   .about__icon {
     width: 48%;
+    @media screen and (max-width: 1050px) {
+      width: 100%;
+    }
 
     img {
+      min-width: max-content;
+      min-height: max-content;
       width: size(66px);
       height: size(20px);
+      @media screen and (max-width: 1050px) {
+        width: 174px;
+        height: 23.04px;
+      }
     }
   }
 
@@ -417,6 +462,12 @@ function changeProductMaterial(material: string, id: number) {
     width: 100%;
     justify-content: space-between;
     margin-bottom: size(47px);
+    @media screen and (max-width: 1050px) {
+      @include flex-col-start();
+      gap: 40px;
+      justify-content: flex-start;
+      margin-bottom: 42px;
+    }
   }
 
   .sub {
@@ -426,6 +477,10 @@ function changeProductMaterial(material: string, id: number) {
     font-weight: 300;
     line-height: 130%;
     word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      width: 100%;
+      font-size: 16px;
+    }
   }
 
   .about__btn {
@@ -439,11 +494,18 @@ function changeProductMaterial(material: string, id: number) {
   @include main-container();
   @include flex-stretch();
   margin-bottom: size(28px);
+  @media screen and (max-width: 1050px) {
+    @include flex-col-start();
+    margin-bottom: 40px;
+  }
 
   .horse__img {
     width: 50%;
     border-bottom-left-radius: 5px;
     border-top-left-radius: 5px;
+    @media screen and (max-width: 1050px) {
+      width: 100%;
+    }
   }
 
   .horse__content {
@@ -454,6 +516,11 @@ function changeProductMaterial(material: string, id: number) {
     justify-content: center;
     border-bottom-right-radius: 5px;
     border-top-right-radius: 5px;
+    @media screen and (max-width: 1050px) {
+      width: 100%;
+      height: 224px;
+      margin: -1% 0 0;
+    }
   }
 
   .horse__logo {
