@@ -9,27 +9,27 @@
       </p>
       <div class="social-medias">
         <div class="social-media">
-        <span class="media__span">
-        Номер телефона
-      </span>
+          <span class="media__span">
+          Номер телефона
+          </span>
           <div class="w-full flex items-center gap-5">
             <NuxtImg class="media__icon" src="/imgs/icons/phone-main-colo.svg"/>
             <NuxtLink class="media__title" target="_blank" to="tel: +998 90 999-99-99">+998 90 999-99-99</NuxtLink>
           </div>
         </div>
         <div class="social-media">
-        <span class="media__span">
-        Email
-      </span>
+          <span class="media__span">
+          Email
+          </span>
           <div class="w-full flex items-center gap-5">
             <NuxtImg class="media__icon" src="/imgs/icons/mail.svg"/>
             <NuxtLink class="media__title" target="_blank" to="mailto: info@uzcolor.uz">info@uzcolor.uz</NuxtLink>
           </div>
         </div>
         <div class="social-media">
-        <span class="media__span">
-          Адрес
-        </span>
+          <span class="media__span">
+            Адрес
+          </span>
           <div class="w-full flex items-center gap-5">
             <address>Тестовое поле адреса</address>
           </div>
@@ -108,6 +108,10 @@ const formMaterials = ref([
   padding-top: size(90px);
   padding-bottom: size(88px);
   background: #F4F4F4;
+  @media screen and (max-width: 1050px) {
+    @include flex-col-start();
+    padding: 0;
+  }
 
   .contact-img {
     position: absolute;
@@ -116,11 +120,21 @@ const formMaterials = ref([
     width: size(537px);
     height: size(712px);
     z-index: 1;
+    @media screen and (max-width: 1050px) {
+      display: none;
+    }
   }
 
   .flex-col-start {
+    position: relative;
     width: size(508px);
     height: 100%;
+    z-index: 2;
+    @media screen and (max-width: 1050px) {
+      @include main-container();
+      padding-top: 59px;
+      padding-bottom: 68px;
+    }
   }
 
   .sub {
@@ -131,64 +145,14 @@ const formMaterials = ref([
     word-wrap: break-word;
     margin-top: size(35px);
     margin-bottom: size(42px);
-  }
-
-
-}
-
-.social-medias {
-  width: 100%;
-  @include flex-col-start();
-  gap: size(28.5px);
-  margin-bottom: size(42px);
-}
-
-.social-media {
-  width: 100%;
-  @include flex-col-start();
-  gap: size(15px);
-
-  .media__span {
-    color: rgba(0, 0, 0, 0.30);
-    font-size: size(14px);
-    font-weight: 400;
-    word-wrap: break-word
-  }
-
-  .media__icon {
-    min-width: max-content;
-    min-height: max-content;
-    width: size(20px);
-    height: size(20px);
-  }
-
-  .media__title {
-    color: #25294A;
-    font-size: size(24px);
-    font-weight: 400;
-    word-wrap: break-word
-  }
-
-  address {
-    color: rgba(0, 0, 0, 0.80);
-    font-size: size(14px);
-    font-weight: 400;
-    word-wrap: break-word;
-    font-style: normal;
+    @media screen and (max-width: 1050px) {
+      font-size: 15px;
+      margin-top: 56px;
+      margin-bottom: 42px;
+    }
   }
 }
 
-.socmedia {
-  @include flex-center();
-  gap: size(10px);
-
-  .socmedia__icon {
-    min-width: max-content;
-    min-height: max-content;
-    width: size(34px);
-    height: size(33px);
-  }
-}
 
 form {
   position: relative;
@@ -199,6 +163,11 @@ form {
   background: white;
   border-radius: 5px;
   z-index: 2;
+  @media screen and (max-width: 1050px) {
+    @include main-container();
+    padding-top: 56px;
+    padding-bottom: 34px;
+  }
 
   .title {
     color: #292D51;
@@ -206,6 +175,10 @@ form {
     font-weight: 400;
     word-wrap: break-word;
     margin-bottom: size(42px);
+    @media screen and (max-width: 1050px) {
+      font-size: 18px;
+      margin-bottom: 52px;
+    }
   }
 
   .form__cards {
@@ -214,6 +187,11 @@ form {
     grid-template-columns: repeat(2, 1fr);
     gap: size(20px);
     margin-bottom: size(40px);
+    @media screen and (max-width: 1050px) {
+      grid-template-columns: repeat(1, 1fr);
+      gap: 20px;
+      margin-bottom: 50px;
+    }
   }
 
   .input__span {
@@ -221,7 +199,10 @@ form {
     font-size: size(13px);
     font-weight: 300;
     line-height: 140%;
-    word-wrap: break-word
+    word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 13px;
+    }
   }
 
   .input {
@@ -233,13 +214,23 @@ form {
     font-size: size(14px);
     font-weight: 300;
     line-height: 140%;
-    word-wrap: break-word
+    word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      padding: 15px 18px;
+      font-size: 14px;
+    }
   }
 
   .form__material {
+    width: 100%;
     @include flex-center();
     gap: size(37px);
     margin-bottom: size(48px);
+    @media screen and (max-width: 1050px) {
+      width: 100%;
+      flex-wrap: wrap;
+      gap: 25px;
+    }
   }
 
   .form__span {
@@ -248,18 +239,28 @@ form {
     font-weight: 400;
     word-wrap: break-word;
     margin-bottom: size(22px);
+    @media screen and (max-width: 1050px) {
+      font-size: 16px;
+      margin-bottom: 45px;
+    }
   }
 
   .form__material__item {
     @include flex-center();
     gap: size(10px);
+    @media screen and (max-width: 1050px) {
+      gap: 10px;
+    }
 
     span {
       color: rgba(0, 0, 0, 0.80);
       font-size: size(14px);
       font-weight: 300;
       line-height: 140%;
-      word-wrap: break-word
+      word-wrap: break-word;
+      @media screen and (max-width: 1050px) {
+        font-size: 16px;
+      }
     }
   }
 
@@ -273,7 +274,18 @@ form {
     font-size: size(12px);
     font-weight: 400;
     line-height: 150%;
-    word-wrap: break-word
+    word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      width: 80%;
+      font-size: 14px;
+    }
+  }
+
+  .flex-center {
+    width: 100%;
+    @media screen and (max-width: 1050px) {
+      @include flex-col-start();
+    }
   }
 }
 </style>

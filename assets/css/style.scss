@@ -33,6 +33,11 @@ header {
       color: white !important;
       font-weight: 700;
       font-size: size(11px);
+      @media screen and (max-width: 1050px) {
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+      }
     }
   }
 }
@@ -40,12 +45,17 @@ header {
 main {
   position: relative;
   width: 100%;
+  @media screen and (max-width: 1050px) {
+  }
 
   .main-slider__pagination {
     position: absolute;
     bottom: size(28px) !important;
     z-index: 8;
     text-align: center;
+    @media screen and (max-width: 1050px) {
+      bottom: 33px !important;
+    }
 
     .swiper-pagination-bullet {
       background: linear-gradient(90deg, #242848 0%, #5761ae 100%);
@@ -55,6 +65,9 @@ main {
     .swiper-pagination-bullet-active {
       width: size(28px);
       border-radius: 100px;
+      @media screen and (max-width: 1050px) {
+        width: 28px;
+      }
     }
   }
 
@@ -76,10 +89,15 @@ main {
     border-radius: 9999px;
     z-index: 6;
     cursor: pointer;
+    @media screen and (max-width: 1050px) {
+      width: 32px;
+      height: 32px;
+    }
   }
 
   .btn-prev {
     left: size(37px);
+
   }
 
   .btn-next {
@@ -95,6 +113,20 @@ main {
       width: 100%;
       height: 100%;
     }
+  }
+}
+
+.product-card {
+  position: relative;
+  @include flex-col-start();
+  gap: size(26px);
+  background: #f4f4f4;
+  padding-bottom: size(27px);
+  border-radius: $border-radius;
+  overflow: hidden;
+  @media screen and (max-width: 1050px) {
+    width: 100%;
+    max-width: 308px;
   }
 }
 
@@ -136,6 +168,10 @@ main {
   height: size(22px);
   background-color: #f4f4f4 !important;
   border: none;
+  @media screen and (max-width: 1050px) {
+    width: 22px;
+    height: 22px;
+  }
 
   &:checked {
     background-color: $main-color !important;
@@ -151,6 +187,10 @@ main {
   font-weight: 400;
   line-height: 170%;
   word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    gap: 3px;
+    font-size: 15px;
+  }
 
   &::before {
     content: ' ';
@@ -160,5 +200,92 @@ main {
     height: size(12px);
     background-size: cover;
     background: url(/public/imgs/icons/icorp.svg) no-repeat top;
+    @media screen and (max-width: 1050px) {
+      width: 8px;
+      height: 12px;
+    }
+  }
+}
+
+.social-medias {
+  width: 100%;
+  @include flex-col-start();
+  gap: size(28.5px);
+  margin-bottom: size(42px);
+  @media screen and (max-width: 1050px) {
+    margin-bottom: 42px;
+  }
+
+
+  .social-media {
+    width: 100%;
+    @include flex-col-start();
+    gap: size(15px);
+    @media screen and (max-width: 1050px) {
+      gap: 15px;
+    }
+
+
+    .media__span {
+      color: rgba(0, 0, 0, 0.30);
+      font-size: size(14px);
+      font-weight: 400;
+      word-wrap: break-word;
+      @media screen and (max-width: 1050px) {
+        font-size: 14px;
+      }
+    }
+
+    .media__icon {
+      min-width: max-content;
+      min-height: max-content;
+      width: size(20px);
+      height: size(20px);
+      @media screen and (max-width: 1050px) {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .media__title {
+      color: #25294A;
+      font-size: size(24px);
+      font-weight: 400;
+      word-wrap: break-word;
+      @media screen and (max-width: 1050px) {
+        font-size: 24px;
+      }
+    }
+
+    address {
+      color: rgba(0, 0, 0, 0.80);
+      font-size: size(14px);
+      font-weight: 400;
+      word-wrap: break-word;
+      font-style: normal;
+      @media screen and (max-width: 1050px) {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.socmedia {
+  @include flex-center();
+  gap: size(10px);
+  justify-content: flex-start;
+  @media screen and (max-width: 1050px) {
+    gap: 10px;
+  }
+
+  .socmedia__icon {
+    min-width: max-content;
+    min-height: max-content;
+    width: size(34px);
+    height: size(33px);
+    @media screen and (max-width: 1050px) {
+      width: 34px;
+      height: 34px;
+    }
   }
 }

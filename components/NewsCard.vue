@@ -24,11 +24,20 @@
   @include flex-center();
   background: #F4F4F4;
   border-right: 5px;
+  @media screen and (max-width: 1050px) {
+    width: 100%;
+    height: auto;
+    @include flex-col-stretch();
+  }
 }
 
 .news__card__img {
   width: size(245px);
   height: 100%;
+  @media screen and (max-width: 1050px) {
+    width: 100%;
+    height: 180px;
+  }
 }
 
 .news__card__content {
@@ -36,6 +45,9 @@
   justify-content: space-between;
   height: 100%;
   padding: size(37px);
+  @media screen and (max-width: 1050px) {
+    padding: 30px;
+  }
 }
 
 .news__card__date {
@@ -46,6 +58,10 @@
   font-size: size(12px);
   font-weight: 400;
   word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    padding: 12.5px 23.5px;
+    font-size: 12px;
+  }
 }
 
 .news__card__title {
@@ -53,7 +69,10 @@
   font-size: size(18px);
   font-weight: 300;
   line-height: 26px;
-  word-wrap: break-word
+  word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    font-size: 18px;
+  }
 }
 
 .news__card__sub {
@@ -61,7 +80,10 @@
   font-size: size(14px);
   font-weight: 300;
   line-height: 150%;
-  word-wrap: break-word
+  word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    font-size: 14px;
+  }
 }
 
 .news__card__read {
@@ -70,5 +92,8 @@
   font-weight: 300;
   line-height: 150%;
   word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    font-size: 14px;
+  }
 }
 </style>

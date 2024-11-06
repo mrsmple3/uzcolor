@@ -51,16 +51,22 @@
           <UIcon class="bg-[#5761AD]" name="solar:alt-arrow-left-linear"/>
         </div>
         <Swiper
+            :breakpoints="{
+              1050: {
+                slidesPerView: 4,
+                spaceBetween: 18,
+              },
+            }"
             :modules="[SwiperAutoplay, SwiperNavigation]"
             :navigation="{
-						nextEl: '.xit .btn-next',
-						prevEl: '.xit .btn-prev',
-					}"
-            :slides-per-view="4"
+              nextEl: '.xit .btn-next',
+              prevEl: '.xit .btn-prev',
+					  }"
+            :slides-per-view="auto"
             :space-between="20"
             :speed="1300"
             class="product__container">
-          <SwiperSlide v-for="product in products">
+          <SwiperSlide v-for="product in products" class="product-card">
             <ProductCard :product="product" @clicked="changeProductMaterial"/>
           </SwiperSlide>
         </Swiper>
@@ -77,16 +83,22 @@
           <UIcon class="bg-[#5761AD]" name="solar:alt-arrow-left-linear"/>
         </div>
         <Swiper
+            :breakpoints="{
+              1050: {
+                slidesPerView: 4,
+                spaceBetween: 18,
+              },
+            }"
             :modules="[SwiperAutoplay, SwiperNavigation]"
             :navigation="{
-						nextEl: '.new-product .btn-next',
-						prevEl: '.new-product .btn-prev',
-					}"
-            :slides-per-view="4"
+              nextEl: '.new-product .btn-next',
+              prevEl: '.new-product .btn-prev',
+            }"
+            :slides-per-view="auto"
             :space-between="20"
             :speed="1300"
             class="product__container">
-          <SwiperSlide v-for="product in products">
+          <SwiperSlide v-for="product in products" class="product-card">
             <ProductCard :product="product" @clicked="changeProductMaterial"/>
           </SwiperSlide>
         </Swiper>
@@ -103,16 +115,22 @@
           <UIcon class="bg-[#5761AD]" name="solar:alt-arrow-left-linear"/>
         </div>
         <Swiper
+            :breakpoints="{
+              1050: {
+                slidesPerView: 4,
+                spaceBetween: 18,
+              },
+            }"
             :modules="[SwiperAutoplay, SwiperNavigation]"
             :navigation="{
 						nextEl: '.recommendation .btn-next',
 						prevEl: '.recommendation .btn-prev',
 					}"
-            :slides-per-view="4"
+            :slides-per-view="auto"
             :space-between="20"
             :speed="1300"
             class="product__container">
-          <SwiperSlide v-for="product in products">
+          <SwiperSlide v-for="product in products" class="product-card">
             <ProductCard :product="product" @clicked="changeProductMaterial"/>
           </SwiperSlide>
         </Swiper>
@@ -160,25 +178,41 @@
     </div>
 
     <div class="numbers">
-      <div v-for="number in numbers" class="numbers__item">
-        <h3 class="numbers__title">{{ number.title }}</h3>
-        <div class="flex flex-col gap-2.5">
-          <span class="numbers__span">{{ number.span }}</span>
-          <p class="numbers__sub">{{ number.sub }}</p>
-        </div>
-      </div>
+      <Swiper
+          :breakpoints="{
+            1050: {
+              slidesPerView: 4,
+              spaceBetween: 18,
+            },
+          }"
+          :modules="[SwiperAutoplay]"
+          :slides-per-view="auto"
+          :space-between="20"
+          :speed="1300"
+      >
+        <SwiperSlide v-for="number in numbers" class="numbers__item">
+          <h3 class="numbers__title">{{ number.title }}</h3>
+          <div class="flex flex-col gap-2.5">
+            <span class="numbers__span">{{ number.span }}</span>
+            <p class="numbers__sub">{{ number.sub }}</p>
+          </div>
+        </SwiperSlide>
+      </Swiper>
     </div>
 
     <div class="news">
       <div class="w-full flex flex-center justify-between">
         <BlockTitle :sub="'Новости'" :title="'Последние новости'"/>
-        <NuxtLink class="news__btn">
+        <NuxtLink class="news__btn not-mobile">
           Все публикации →
         </NuxtLink>
       </div>
       <div class="news__cards">
         <NewsCard/>
       </div>
+      <NuxtLink class="news__btn not-desktop">
+        Все публикации →
+      </NuxtLink>
     </div>
   </div>
 </template>
@@ -203,6 +237,7 @@ const products = ref([
       "/imgs/product-slide-3.png",
       "/imgs/product-slide-4.png",
       "/imgs/product-slide-5.png",
+      "/imgs/product-slide-5.png",
     ],
   },
   {
@@ -216,6 +251,7 @@ const products = ref([
       "/imgs/product-slide-3.png",
       "/imgs/product-slide-4.png",
       "/imgs/product-slide-5.png",
+      "/imgs/product-slide-5.png",
     ],
   },
   {
@@ -227,6 +263,7 @@ const products = ref([
       "/imgs/product-slide-2.png",
       "/imgs/product-slide-1.png",
       "/imgs/product-slide-3.png",
+      "/imgs/product-slide-5.png",
       "/imgs/product-slide-4.png",
       "/imgs/product-slide-5.png",
     ],
@@ -239,6 +276,7 @@ const products = ref([
     materials: [
       "/imgs/product-slide-2.png",
       "/imgs/product-slide-1.png",
+      "/imgs/product-slide-5.png",
       "/imgs/product-slide-3.png",
       "/imgs/product-slide-4.png",
       "/imgs/product-slide-5.png",
@@ -252,6 +290,7 @@ const products = ref([
     materials: [
       "/imgs/product-slide-2.png",
       "/imgs/product-slide-1.png",
+      "/imgs/product-slide-5.png",
       "/imgs/product-slide-3.png",
       "/imgs/product-slide-4.png",
       "/imgs/product-slide-5.png",
@@ -301,7 +340,7 @@ function changeProductMaterial(material: string, id: number) {
   margin-bottom: size(110px);
   @media screen and (max-width: 1050px) {
     padding-top: 56px;
-    padding-bottom: 67px;
+    margin-bottom: 67px;
     gap: 42px;
   }
 }
@@ -443,7 +482,7 @@ function changeProductMaterial(material: string, id: number) {
   .about__icon {
     width: 48%;
     @media screen and (max-width: 1050px) {
-      width: 100%;
+      display: none;
     }
 
     img {
@@ -475,7 +514,7 @@ function changeProductMaterial(material: string, id: number) {
     color: #5c6185;
     font-size: size(16px);
     font-weight: 300;
-    line-height: 130%;
+    line-height: 150%;
     word-wrap: break-word;
     @media screen and (max-width: 1050px) {
       width: 100%;
@@ -500,11 +539,13 @@ function changeProductMaterial(material: string, id: number) {
   }
 
   .horse__img {
+    position: relative;
     width: 50%;
     border-bottom-left-radius: 5px;
     border-top-left-radius: 5px;
     @media screen and (max-width: 1050px) {
       width: 100%;
+      height: 280px;
     }
   }
 
@@ -518,7 +559,7 @@ function changeProductMaterial(material: string, id: number) {
     border-top-right-radius: 5px;
     @media screen and (max-width: 1050px) {
       width: 100%;
-      height: 224px;
+      height: 230px;
       margin: -1% 0 0;
     }
   }
@@ -533,17 +574,33 @@ function changeProductMaterial(material: string, id: number) {
   @include main-container();
   @include flex-stretch();
   justify-content: space-between;
-  gap: size(20px);
   margin-bottom: size(110px);
+  overflow-x: hidden;
+  @media screen and (max-width: 1050px) {
+    margin-bottom: 87px;
+  }
+
+  .swiper-wrapper {
+    justify-content: space-between;
+  }
 
   .numbers__item {
-    width: size(308px);
     @include flex-col-start();
     justify-content: space-between;
     gap: size(100px);
-    padding: size(25px);
+    padding: size(32px) size(25px);
     border-radius: 5px;
     border: 1px #CFD4FF solid;
+    @media screen and (max-width: 1050px) {
+      width: 100%;
+      max-width: 308px;
+      gap: 100px;
+      padding: 32px 25px;
+    }
+
+    &:last-child {
+      margin: 0 !important;
+    }
   }
 
   .numbers__title {
@@ -554,7 +611,9 @@ function changeProductMaterial(material: string, id: number) {
     font-size: size(80px);
     font-weight: 300;
     word-wrap: break-word;
-
+    @media screen and (max-width: 1050px) {
+      font-size: 80px;
+    }
   }
 
   .numbers__span {
@@ -563,7 +622,10 @@ function changeProductMaterial(material: string, id: number) {
     font-size: size(14px);
     font-weight: 300;
     line-height: 150%;
-    word-wrap: break-word
+    word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 14px;
+    }
   }
 
   .numbers__sub {
@@ -571,7 +633,10 @@ function changeProductMaterial(material: string, id: number) {
     font-size: size(16px);
     font-weight: 300;
     line-height: 130%;
-    word-wrap: break-word
+    word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 16px
+    }
   }
 }
 
@@ -580,6 +645,17 @@ function changeProductMaterial(material: string, id: number) {
   @include flex-col-start();
   gap: size(50px);
   margin-bottom: size(120px);
+  @media screen and (max-width: 1050px) {
+    gap: 53px;
+    margin-bottom: 106px;
+  }
+
+  .flex-center {
+    @media screen and (max-width: 1050px) {
+      @include flex-col-start();
+    }
+
+  }
 
   .news__btn {
     @include btn(20.5px, 53px, linear-gradient(90deg, #242848 0%, #5761AE 100%), #fff);
@@ -590,6 +666,10 @@ function changeProductMaterial(material: string, id: number) {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: size(20px) size(28px);
+    @media screen and (max-width: 1050px) {
+      grid-template-columns: repeat(1, 1fr);
+      gap: 22px;
+    }
   }
 }
 </style>

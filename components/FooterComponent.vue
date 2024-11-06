@@ -98,23 +98,39 @@ footer {
   padding-top: size(106px);
   padding-bottom: size(30px);
   background: linear-gradient(180deg, #151723 0%, #2B2A32 100%);
+  @media screen and (max-width: 1050px) {
+    gap: 72px;
+    padding-top: 66px;
+    padding-bottom: 39px;
+  }
 }
 
 .footer__content {
   width: 100%;
   @include flex-start();
   justify-content: space-between;
+  gap: size(30px);
+  @media screen and (max-width: 1050px) {
+    @include flex-col-start();
+    gap: 65px;
+  }
 }
 
 .footer__item {
   @include flex-col-start();
   gap: size(24px);
+  @media screen and (max-width: 1050px) {
+    gap: 33px;
+  }
 
   .phone {
     color: rgba(255, 255, 255, 0.90);
     font-size: size(20px);
     font-weight: 600;
-    word-wrap: break-word
+    word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 20px;
+    }
   }
 
   .mail {
@@ -122,7 +138,10 @@ footer {
     font-size: size(14px);
     font-weight: 500;
     line-height: 152%;
-    word-wrap: break-word
+    word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 16px;
+    }
   }
 }
 
@@ -132,18 +151,27 @@ footer {
   font-weight: 500;
   line-height: 152%;
   word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    font-size: 23px;
+  }
 
   &.second {
     color: rgba(255, 255, 255, 0.60);
     font-size: size(13px);
     font-weight: 300;
     margin-bottom: size(9px);
+    @media screen and (max-width: 1050px) {
+      font-size: 16px;
+    }
   }
 }
 
 .item__list {
   @include flex-col-start();
   gap: size(12px);
+  @media screen and (max-width: 1050px) {
+    gap: 12px;
+  }
 
   .list__item {
     color: rgba(255, 255, 255, 0.70);
@@ -151,9 +179,15 @@ footer {
     font-weight: 500;
     line-height: 150%;
     word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 16px;
+    }
 
     &.request {
       margin-bottom: size(6px);
+      @media screen and (max-width: 1050px) {
+        margin-bottom: 6px;
+      }
     }
   }
 
@@ -162,6 +196,9 @@ footer {
     border: 1px solid #fff;
     color: white;
     font-size: size(13px);
+    @media screen and (max-width: 1050px) {
+      font-size: 13px;
+    }
   }
 }
 
@@ -169,12 +206,19 @@ footer {
   @include flex-center();
   justify-content: flex-start;
   gap: size(10px);
+  @media screen and (max-width: 1050px) {
+    gap: 10px;
+  }
 
   .social-media__item {
     min-width: max-content;
     min-height: max-content;
     width: size(30px);
-    height: size(30px)
+    height: size(30px);
+    @media screen and (max-width: 1050px) {
+      width: 30px;
+      height: 30px;
+    }
   }
 
   .address {
@@ -182,13 +226,25 @@ footer {
     font-size: size(14px);
     font-weight: 400;
     line-height: 152%;
-    word-wrap: break-word
+    word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 16px;
+    }
   }
 }
 
 .footer__bottom {
   width: 100%;
   @include flex-end();
+  @media screen and (max-width: 1050px) {
+    @include flex-col-start();
+    flex-direction: column-reverse;
+    gap: 61px;
+  }
+
+  .flex-col-end {
+    @include flex-col-start();
+  }
 }
 
 .footer__logo {
@@ -197,6 +253,11 @@ footer {
   width: size(143px);
   height: size(18.93px);
   margin-bottom: size(30px);
+  @media screen and (max-width: 1050px) {
+    width: 143px;
+    height: 18.93px;
+    margin-bottom: 30px;
+  }
 }
 
 .footer__bottom__sub {
@@ -207,6 +268,10 @@ footer {
   line-height: 152%;
   word-wrap: break-word;
   margin-bottom: size(6px);
+  @media screen and (max-width: 1050px) {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
 }
 
 .copy {
@@ -214,6 +279,9 @@ footer {
   font-size: size(14px);
   font-weight: 300;
   line-height: 160%;
-  word-wrap: break-word
+  word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    font-size: 14px;
+  }
 }
 </style>

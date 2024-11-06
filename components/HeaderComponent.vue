@@ -1,19 +1,27 @@
 <template>
-  <div class="header w-full flex flex-col">
-    <header class="!bg-primary">
-      <NuxtLink to="/">
-        <NuxtImg class="logo" src="/logo.svg"/>
-      </NuxtLink>
+  <div :class="{active: isActiveHeader}" class="header w-full flex flex-col">
+    <header>
+      <div class="flex items-center">
+        <div class="burger not-desktop" @click="toggleMobile">
+          <div class="burger__replacer">
+            <NuxtImg class="burger__open" src="/imgs/icons/burger.svg"/>
+            <NuxtImg class="burger__close" src="/imgs/icons/x.svg"/>
+          </div>
+        </div>
+        <NuxtLink to="/">
+          <NuxtImg class="logo" src="/logo.svg"/>
+        </NuxtLink>
+      </div>
       <UInput
           v-model="searchRef"
           autocomplete="off"
-          class="search"
+          class="search not-mobile"
           color="white"
           icon="i-heroicons-magnifying-glass-20-solid"
           placeholder="Поиск..."
           size="xl"
           variant="none"/>
-      <div class="flex items-center gap-3.5">
+      <div class="flex items-center gap-3.5 not-mobile">
         <NuxtLink class="social-media__item" to="/">
           <UIcon class="social-media-icon" name="ic:baseline-telegram"/>
         </NuxtLink>
@@ -24,7 +32,7 @@
           <NuxtImg class="social-media-icon" src="/imgs/icons/socialmedia-maincolor-3.svg"/>
         </NuxtLink>
       </div>
-      <UDropdown :items="items" :popper="{ placement: 'bottom-start' }" class="lang">
+      <UDropdown :items="items" :popper="{ placement: 'bottom-start' }" class="lang not-mobile">
         <UButton class="lang__btn" color="black" label="RU" trailing-icon="i-heroicons-chevron-down-20-solid"
                  variant="ghost">
           <template #leading>
@@ -35,7 +43,7 @@
           </template>
         </UButton>
       </UDropdown>
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-2.5 not-mobile">
         <NuxtImg alt="" class="w-6 h-6" src="/imgs/icons/phone.svg"/>
         <div class="flex flex-col items-start">
           <NuxtLink class="phone" to="tel:+998 90 999-99-99">
@@ -62,7 +70,7 @@
 
       </div>
     </header>
-    <div class="header__bottom">
+    <div class="header__bottom not-mobile">
       <div v-for="menuItem in menu">
         <div class="submenu__title" @click="subActive = !subActive">
           {{ menuItem.menu }}
@@ -79,7 +87,6 @@
           </div>
         </div>
       </div>
-
       <NuxtLink class="submenu__title" to="/">
         Пошив изделий
         <UIcon class="ml-2.5" name="solar:alt-arrow-down-linear"/>
@@ -101,6 +108,63 @@
       <NuxtLink class="submenu__title" to="/">
         Контакты
       </NuxtLink>
+    </div>
+    <div class="mobile__mobile not-desktop">
+      <UInput
+          v-model="searchRef"
+          autocomplete="off"
+          class="search"
+          color="white"
+          icon="i-heroicons-magnifying-glass-20-solid"
+          placeholder="Поиск..."
+          size="xl"
+          variant="none"/>
+      <UDropdown :items="items" :popper="{ placement: 'bottom-start' }" class="lang">
+        <UButton class="lang__btn" color="black" label="RU" trailing-icon="i-heroicons-chevron-down-20-solid"
+                 variant="ghost">
+          <template #leading>
+            <NuxtImg
+                class="w-6 h-6"
+                src="https://api.iconify.design/emojione:flag-for-russia.svg"
+            />
+          </template>
+        </UButton>
+      </UDropdown>
+    </div>
+    <div class="mobile-menu">
+      <div class="social-medias">
+        <div class="social-media">
+          <span class="media__span">
+          Номер телефона
+          </span>
+          <div class="w-full flex items-center gap-5">
+            <NuxtImg class="media__icon" src="/imgs/icons/phone-main-colo.svg"/>
+            <NuxtLink class="media__title" target="_blank" to="tel: +998 90 999-99-99">+998 90 999-99-99</NuxtLink>
+          </div>
+        </div>
+        <div class="social-media">
+          <span class="media__span">
+          Email
+          </span>
+          <div class="w-full flex items-center gap-5">
+            <NuxtImg class="media__icon" src="/imgs/icons/mail.svg"/>
+            <NuxtLink class="media__title" target="_blank" to="mailto: info@uzcolor.uz">info@uzcolor.uz</NuxtLink>
+          </div>
+        </div>
+        <div class="social-media">
+          <span class="media__span">
+            Адрес
+          </span>
+          <div class="w-full flex items-center gap-5">
+            <address>Тестовое поле адреса</address>
+          </div>
+        </div>
+      </div>
+      <div class="socmedia">
+        <NuxtImg class="socmedia__icon" src="/imgs/icons/socialmedia-1.svg"/>
+        <NuxtImg class="socmedia__icon" src="/imgs/icons/socialmedia-2.svg"/>
+        <NuxtImg class="socmedia__icon" src="/imgs/icons/socialmedia-3.svg"/>
+      </div>
     </div>
   </div>
 </template>
@@ -253,15 +317,110 @@ const menu = ref([
     ]
   },
 ]);
+
+const isActiveHeader = ref(false);
+
+function toggleMobile() {
+  isActiveHeader.value = !isActiveHeader.value;
+  document.querySelector('body').classList.toggle('overflow-hidden');
+}
 </script>
 
 <style lang="scss" scoped>
+.mobile__mobile {
+  @include main-container();
+  @include flex-center();
+  background: white;
+  padding-bottom: 30px;
+  gap: 20px;
+  transition: all 0.3s;
+
+  .search {
+    width: 100%;
+    height: 63px;
+  }
+}
+
+.mobile-menu {
+  position: relative;
+  @include main-container();
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+  transition: all 0.3s;
+
+  .media__icon {
+    filter: brightness(1000%);
+  }
+
+  .media__title {
+    color: white;
+  }
+
+  .media__span {
+    color: rgba(255, 255, 255, 0.50);
+  }
+
+  address {
+    color: white;
+  }
+}
+
 .header {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 100;
+
+  &::before {
+    content: ' ';
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100%;
+    background: $primary;
+    opacity: 0;
+    z-index: 0;
+    transition: all 0.3s;
+  }
+
+  &.active {
+    &::before {
+      opacity: 1;
+    }
+
+    .logo {
+      filter: brightness(1000%);
+    }
+
+    .actions {
+      filter: brightness(1000%);
+    }
+
+    .mobile-menu {
+      height: max-content;
+      padding-top: 20px;
+      padding-bottom: 66px;
+      overflow-y: auto;
+    }
+
+    .burger {
+      .burger__open {
+        transform: translate(-50%, -50%) scale(0);
+      }
+
+      .burger__close {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+
+    .lang__btn {
+      color: white;
+    }
+  }
 }
 
 .phone {
@@ -279,6 +438,12 @@ header {
   background: #fff;
   padding-top: size(28px);
   padding-bottom: size(28px);
+  border: none;
+  transition: all 0.3s;
+  @media screen and (max-width: 1050px) {
+    padding-top: 23px;
+    padding-bottom: 30px;
+  }
 }
 
 .logo {
@@ -286,6 +451,10 @@ header {
   min-height: max-content;
   width: size(201px);
   height: size(26.61px);
+  @media screen and (max-width: 1050px) {
+    width: 154px;
+    height: 20.39px;
+  }
 }
 
 .search {
@@ -298,6 +467,9 @@ header {
   font-size: size(14px);
   font-weight: 400;
   word-wrap: break-word;
+  @media screen and (max-width: 1400px) {
+    width: auto;
+  }
 }
 
 .social-media__item {
@@ -323,6 +495,32 @@ header {
     background: #fff;
   }
 }
+
+.burger {
+  position: relative;
+  margin-right: 25px;
+
+}
+
+.burger__replacer {
+  width: 31px;
+  height: 31px;
+
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 31px;
+    height: 31px;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s;
+  }
+
+  .burger__close {
+    transform: translate(-50%, -50%) scale(0);
+  }
+}
+
 
 .submenu {
   position: absolute;
@@ -371,12 +569,25 @@ header {
 .actions {
   width: size(23px);
   height: size(22px);
+
+  img {
+    min-width: max-content;
+    min-height: max-content;
+  }
+
+  @media screen and (max-width: 1050px) {
+    width: 26px;
+    height: 26px;
+  }
 }
 
 .header__bottom {
   position: relative;
+  width: 100vw;
   @include flex-center;
   background: #F9F9F9;
+  @media screen and (max-width: 1050px) {
+  }
 
   .submenu__title {
     @include flex-center;
@@ -388,6 +599,9 @@ header {
     font-weight: 400;
     word-wrap: break-word;
     white-space: nowrap;
+    @media screen and (max-width: 1400px) {
+      padding: size(20px) size(26px);
+    }
 
     &:first-child {
       padding-left: size(120px);
@@ -402,5 +616,4 @@ header {
     }
   }
 }
-
 </style>
