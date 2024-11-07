@@ -1,34 +1,32 @@
 <template>
-  <div :style="{ paddingTop: `${headerHeight}px` }" class="layout">
-    <HeaderComponent/>
-    <slot/>
-    <FooterComponent/>
-  </div>
+	<div :style="{ paddingTop: `${headerHeight}px` }" class="layout">
+		<HeaderComponent />
+		<slot />
+		<FooterComponent />
+	</div>
 </template>
 
 <script lang="ts" setup>
-import FooterComponent from "~/components/FooterComponent.vue";
+	import FooterComponent from "~/components/FooterComponent.vue";
 
-function updateHeaderHeight() {
-  const headerElement = document.querySelector('.header');
-  if (headerElement) {
-    headerHeight.value = headerElement.clientHeight;
-  }
-}
+	function updateHeaderHeight() {
+		const headerElement = document.querySelector(".header");
+		if (headerElement) {
+			headerHeight.value = headerElement.clientHeight;
+		}
+	}
 
-const headerHeight = ref(0);
+	const headerHeight = ref(0);
 
-onMounted(() => {
-  updateHeaderHeight();
-  window.addEventListener('resize', updateHeaderHeight);
-});
+	onMounted(() => {
+		updateHeaderHeight();
+		window.addEventListener("resize", updateHeaderHeight);
+	});
 </script>
 
 <style lang="scss" scoped>
-.layout {
-  position: relative;
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-}
+	.layout {
+		position: relative;
+		width: 100%;
+	}
 </style>
