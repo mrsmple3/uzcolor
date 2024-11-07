@@ -76,16 +76,7 @@
           {{ menuItem.menu }}
           <UIcon class="ml-2.5" name="solar:alt-arrow-down-linear"/>
         </div>
-        <div :class="{ active: subActive }" class="submenu">
-          <div v-for="submenu in menuItem.submenu" class="submenu__item">
-            <h4 class="submenu__item__title">{{ submenu.title }}</h4>
-            <div class="flex flex-col items-start gap-3.5">
-              <NuxtLink v-for="item in submenu.list" :to="item.link" class="submenu__item__sub">
-                {{ item.title }}
-              </NuxtLink>
-            </div>
-          </div>
-        </div>
+        <CatalogComponent :sub-active="subActive" :submenus="menuItem.submenu"/>
       </div>
       <NuxtLink class="submenu__title" to="/">
         Пошив изделий
@@ -326,7 +317,7 @@ function toggleMobile() {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .mobile__mobile {
   @include main-container();
   @include flex-center();
@@ -432,6 +423,7 @@ function toggleMobile() {
 }
 
 header {
+  position: relative;
   @include main-container();
   @include flex-center();
   gap: size(31px);

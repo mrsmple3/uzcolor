@@ -89,6 +89,7 @@ const navbar = ref([
 <style lang="scss" scoped>
 .footer {
   width: 100%;
+  order: 0;
 }
 
 footer {

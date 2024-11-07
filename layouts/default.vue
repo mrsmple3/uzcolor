@@ -28,5 +28,7 @@ onMounted(() => {
 .layout {
   position: relative;
   width: 100%;
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
 }
 </style>
