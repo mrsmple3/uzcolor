@@ -7,8 +7,6 @@
 </template>
 
 <script lang="ts" setup>
-	import FooterComponent from "~/components/FooterComponent.vue";
-
 	function updateHeaderHeight() {
 		const headerElement = document.querySelector(".header");
 		if (headerElement) {
