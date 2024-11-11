@@ -166,7 +166,6 @@ main {
 .form__material__checkbox {
   width: size(22px);
   height: size(22px);
-  background-color: #f4f4f4 !important;
   border: none;
   @media screen and (max-width: 1050px) {
     width: 22px;
@@ -286,6 +285,25 @@ main {
     @media screen and (max-width: 1050px) {
       width: 34px;
       height: 34px;
+    }
+  }
+}
+
+.form__material__item {
+  @include flex-center();
+  gap: size(10px);
+  @media screen and (max-width: 1050px) {
+    gap: 10px;
+  }
+
+  label {
+    color: rgba(0, 0, 0, 0.80) !important;
+    font-size: size(14px);
+    font-weight: 300;
+    line-height: 140%;
+    word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 16px;
     }
   }
 }

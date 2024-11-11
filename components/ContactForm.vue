@@ -63,10 +63,11 @@
       </div>
       <span class="form__span">Выберите необходимые материалы</span>
       <div class="form__material">
-        <div v-for="item in formMaterials" class="form__material__item">
-          <UCheckbox :model-value="item.checked"
+        <div v-for="(item, index) in formMaterials" class="form__material__item">
+          <UCheckbox :id="'check'+ index"
+                     :label="item.name" :model-value="item.checked"
+                     :ui="{background: '!bg-[#f4f4f4]'}"
                      inputClass="form__material__checkbox" @change="item.checked = !item.checked"/>
-          <span>{{ item.name }}</span>
         </div>
       </div>
       <div class="flex-center gap-[30px]">
@@ -233,6 +234,7 @@ form {
     }
   }
 
+
   .form__span {
     color: #292D51;
     font-size: size(14px);
@@ -242,25 +244,6 @@ form {
     @media screen and (max-width: 1050px) {
       font-size: 16px;
       margin-bottom: 45px;
-    }
-  }
-
-  .form__material__item {
-    @include flex-center();
-    gap: size(10px);
-    @media screen and (max-width: 1050px) {
-      gap: 10px;
-    }
-
-    span {
-      color: rgba(0, 0, 0, 0.80);
-      font-size: size(14px);
-      font-weight: 300;
-      line-height: 140%;
-      word-wrap: break-word;
-      @media screen and (max-width: 1050px) {
-        font-size: 16px;
-      }
     }
   }
 
