@@ -1,8 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import twilio from "twilio";
 
-const twilioAccountSid = "";
-const twilioAuthToken = "";
+const config = useRuntimeConfig();
+
+const twilioAccountSid = config.public.twilioAccountSid;
+const twilioAuthToken = config.public.twilioAuthToken;
 
 const prisma = new PrismaClient();
 const client = twilio(twilioAuthToken, "AuthToken");
