@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String
+  phone     String     @unique
+  password  String
+  favorites Favorite[]
+  Cart      Cart?
+
+  @@map("users")
+}
+
+model DefineProduct {
+  id          String     @id @default(cuid())
+  name        String
+  art         String
+  weight      Int
+  photo       String?
+  price       String
+  type        String
+  composition String
+  params      Json       @default("{}")
+  color       Json       @default("{}")
+  des         String
+  description String
+  count       Int
+  categoryId  String     @map("category_id")
+  category    Category   @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  Favorite    Favorite[]
+  CartItem    CartItem[]
+
+  @@map("define_products")
+}
+
+model Category {
+  id            String          @id @default(cuid())
+  name          String
+  photo         String?
+  DefineProduct DefineProduct[]
+
+  @@map("categories")
+}
+
+model Filter {
+  id   String  @id @default(cuid())
+  name String  @unique
+  show Boolean @default(true)
+
+  @@map("filters")
+}
+
+model Favorite {
+  id        String        @id @default(cuid())
+  userId    String
+  productId String
+  user      User          @relation(fields: [userId], references: [id])
+  product   DefineProduct @relation(fields: [productId], references: [id])
+  createdAt DateTime      @default(now())
+
+  @@map("favorites")
+}
+
+model Cart {
+  id     String     @id @default(cuid())
+  userId String     @unique
+  user   User       @relation(fields: [userId], references: [id])
+  items  CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String        @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int
+  cart      Cart          @relation(fields: [cartId], references: [id])
+  product   DefineProduct @relation(fields: [productId], references: [id])
+
+  @@map("cart_items")
+}

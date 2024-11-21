@@ -106,9 +106,9 @@ const formMaterials = ref([
   @include main-container();
   @include flex-stretch();
   justify-content: space-between;
+  background: #F4F4F4;
   padding-top: size(90px);
   padding-bottom: size(88px);
-  background: #F4F4F4;
   @media screen and (max-width: 1050px) {
     @include flex-col-start();
     padding: 0;

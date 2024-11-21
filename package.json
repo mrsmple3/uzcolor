@@ -12,16 +12,26 @@
   "dependencies": {
     "@nuxt/fonts": "^0.10.2",
     "@nuxt/image": "^1.8.1",
-    "@nuxt/ui": "^2.18.7",
+    "@nuxt/ui": "^2.19.2",
     "@nuxtjs/tailwindcss": "^6.12.2",
-    "node-sass": "^9.0.0",
+    "@pinia/nuxt": "^0.7.0",
+    "@prisma/client": "^5.22.0",
+    "nitro": "^0.0.0",
     "nuxt": "^3.13.2",
     "nuxt-swiper": "^1.2.2",
+    "pinia": "^2.2.6",
     "sass-loader": "^16.0.2",
+    "twilio": "^5.3.6",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
-    "sass": "^1.80.5"
+    "@types/bun": "latest",
+    "prisma": "^5.22.0",
+    "sass": "1.77.6"
+  },
+  "module": "index.ts",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   }
 }

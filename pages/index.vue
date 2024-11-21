@@ -36,15 +36,15 @@
     <div class="catalog">
       <BlockTitle :sub="'Разделы'" :title="'Категории продукции'"/>
       <div class="catalog__container">
-        <NuxtLink v-for="item in catalog" class="catalog__item" to="/">
-          <NuxtImg :src="item.img" class="item__img"/>
-          <span class="item__span">{{ item.span }}</span>
-          <h3 class="item__title">{{ item.title }}</h3>
+        <NuxtLink v-for="item in productStore.$state.category" :to="'/filter?id=' + item.id" class="catalog__item">
+          <NuxtImg :src="item.photo" class="item__img"/>
+          <span class="item__span">Категория</span>
+          <h3 class="item__title">{{ item.name }}</h3>
         </NuxtLink>
       </div>
     </div>
 
-    <div class="xit">
+    <div v-if="productStore.$state.typeProducts.xit.length > 0" class="xit">
       <BlockTitle :sub="'Популярное'" :title="'Хиты продаж'"/>
       <div class="slider__replacer">
         <div class="btn-prev">
@@ -62,12 +62,12 @@
               nextEl: '.xit .btn-next',
               prevEl: '.xit .btn-prev',
 					  }"
-            :slides-per-view="auto"
+            :slides-per-view="'auto'"
             :space-between="20"
             :speed="1300"
             class="product__container">
-          <SwiperSlide v-for="product in products" class="product-card">
-            <ProductCard :product="product" @clicked="changeProductMaterial"/>
+          <SwiperSlide v-for="product in productStore.$state.typeProducts.xit" class="product-card">
+            <ProductCard :product="product"/>
           </SwiperSlide>
         </Swiper>
         <div class="btn-next">
@@ -76,7 +76,7 @@
       </div>
     </div>
 
-    <div class="new-product">
+    <div v-if="productStore.$state.typeProducts.news.length > 0" class="new-product">
       <BlockTitle :sub="'Новая продукция'" :title="'Новинки'"/>
       <div class="slider__replacer">
         <div class="btn-prev">
@@ -98,8 +98,8 @@
             :space-between="20"
             :speed="1300"
             class="product__container">
-          <SwiperSlide v-for="product in products" class="product-card">
-            <ProductCard :product="product" @clicked="changeProductMaterial"/>
+          <SwiperSlide v-for="product in productStore.$state.typeProducts.news" class="product-card">
+            <ProductCard :product="product"/>
           </SwiperSlide>
         </Swiper>
         <div class="btn-next">
@@ -108,7 +108,7 @@
       </div>
     </div>
 
-    <div class="recommendation">
+    <div v-if="productStore.$state.typeProducts.recommendation.length > 0" class="recommendation">
       <BlockTitle :sub="'Наши рекомендации'" :title="'Рекомендуем'"/>
       <div class="slider__replacer">
         <div class="btn-prev">
@@ -130,8 +130,8 @@
             :space-between="20"
             :speed="1300"
             class="product__container">
-          <SwiperSlide v-for="product in products" class="product-card">
-            <ProductCard :product="product" @clicked="changeProductMaterial"/>
+          <SwiperSlide v-for="product in productStore.$state.typeProducts.recommendation" class="product-card">
+            <ProductCard :product="product"/>
           </SwiperSlide>
         </Swiper>
         <div class="btn-next">
@@ -203,7 +203,7 @@
     <div class="news">
       <div class="w-full flex flex-center justify-between">
         <BlockTitle :sub="'Новости'" :title="'Последние новости'"/>
-        <NuxtLink class="news__btn not-mobile">
+        <NuxtLink class="news__btn not-mobile" to="/news">
           Все публикации →
         </NuxtLink>
       </div>
@@ -218,117 +218,16 @@
 </template>
 
 <script lang="ts" setup>
-const catalog = ref([
-  {span: "Категория", title: "Трикотажное полотно", img: "/imgs/catalog-1.jpg"},
-  {span: "Категория", title: "Трикотажные ткани", img: "/imgs/catalog-2.jpg"},
-  {span: "Категория", title: "Принтовые ткани", img: "/imgs/catalog-3.jpg"},
-  {span: "Категория", title: "Фурнитура", img: "/imgs/catalog-4.jpg"},
-]);
+import {type ProductState, useProductStore} from "~/store/product.store";
 
-const products = ref([
-  {
-    id: 0,
-    img: "/imgs/product-1.jpg",
-    title: "Кулирная гладь 100% ХБ 250гр",
-    sub: "Арт. TER382942",
-    materials: [
-      "/imgs/product-slide-2.png",
-      "/imgs/product-slide-1.png",
-      "/imgs/product-slide-3.png",
-      "/imgs/product-slide-4.png",
-      "/imgs/product-slide-5.png",
-      "/imgs/product-slide-5.png",
-    ],
-  },
-  {
-    id: 1,
-    img: "/imgs/product-1.jpg",
-    title: "Кулирная гладь 100% ХБ 250гр",
-    sub: "Арт. TER382942",
-    materials: [
-      "/imgs/product-slide-2.png",
-      "/imgs/product-slide-1.png",
-      "/imgs/product-slide-3.png",
-      "/imgs/product-slide-4.png",
-      "/imgs/product-slide-5.png",
-      "/imgs/product-slide-5.png",
-    ],
-  },
-  {
-    id: 2,
-    img: "/imgs/product-1.jpg",
-    title: "Кулирная гладь 100% ХБ 250гр",
-    sub: "Арт. TER382942",
-    materials: [
-      "/imgs/product-slide-2.png",
-      "/imgs/product-slide-1.png",
-      "/imgs/product-slide-3.png",
-      "/imgs/product-slide-5.png",
-      "/imgs/product-slide-4.png",
-      "/imgs/product-slide-5.png",
-    ],
-  },
-  {
-    id: 3,
-    img: "/imgs/product-1.jpg",
-    title: "Кулирная гладь 100% ХБ 250гр",
-    sub: "Арт. TER382942",
-    materials: [
-      "/imgs/product-slide-2.png",
-      "/imgs/product-slide-1.png",
-      "/imgs/product-slide-5.png",
-      "/imgs/product-slide-3.png",
-      "/imgs/product-slide-4.png",
-      "/imgs/product-slide-5.png",
-    ],
-  },
-  {
-    id: 4,
-    img: "/imgs/product-1.jpg",
-    title: "Кулирная гладь 100% ХБ 250гр",
-    sub: "Арт. TER382942",
-    materials: [
-      "/imgs/product-slide-2.png",
-      "/imgs/product-slide-1.png",
-      "/imgs/product-slide-5.png",
-      "/imgs/product-slide-3.png",
-      "/imgs/product-slide-4.png",
-      "/imgs/product-slide-5.png",
-    ],
-  },
-]);
+const productStore = useProductStore();
 
-const numbers = ref([
-  {
-    title: '120+',
-    span: 'Команда профессионалов',
-    sub: 'Высококвалифицированных специалистов и экспертов',
-  },
-  {
-    title: '40+',
-    span: 'Ассортимент продукции',
-    sub: 'Видов трикотажных полотен разных размеров и составов',
-  },
-  {
-    title: '10+',
-    span: 'Опыт в производстве',
-    sub: 'Лет успешного опыта в текстильной промышленности',
-  },
-  {
-    title: '100%',
-    span: 'Стандарты качества',
-    sub: 'Каждый этап производства проходит контроль качества',
-  }
-
-])
-
-function changeProductMaterial(material: string, id: number) {
-  products.value.map(function (item: any) {
-    if (item.id === id) {
-      item.img = material;
-    }
-  });
-}
+onMounted(() => {
+  productStore.getProductByType('xit');
+  productStore.getProductByType('news');
+  productStore.getProductByType('recommendation');
+  productStore.getAllCategory();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -411,47 +310,6 @@ function changeProductMaterial(material: string, id: number) {
     gap: 42px;
     margin-bottom: 87px;
   }
-}
-
-.slider__replacer {
-  position: relative;
-  width: 100%;
-
-  .btn-next,
-  .btn-prev {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: size(50px);
-    height: size(50px);
-    @include flex-center();
-    justify-content: center;
-    border-radius: 9999px;
-    background: white;
-    box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    transition: all 0.3s;
-    @media screen and (max-width: 1050px) {
-      display: none;
-    }
-
-    &.swiper-button-disabled {
-      width: 0;
-    }
-  }
-
-  .btn-prev {
-    left: size(-80px);
-  }
-
-  .btn-next {
-    right: size(-80px);
-  }
-}
-
-.product__container {
-  width: 100%;
-  @include flex-start();
 }
 
 .about {
@@ -654,22 +512,10 @@ function changeProductMaterial(material: string, id: number) {
     @media screen and (max-width: 1050px) {
       @include flex-col-start();
     }
-
   }
 
   .news__btn {
     @include btn(20.5px, 53px, linear-gradient(90deg, #242848 0%, #5761AE 100%), #fff);
-  }
-
-  .news__cards {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: size(20px) size(28px);
-    @media screen and (max-width: 1050px) {
-      grid-template-columns: repeat(1, 1fr);
-      gap: 22px;
-    }
   }
 }
 </style>
