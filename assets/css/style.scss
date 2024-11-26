@@ -137,29 +137,82 @@ main {
   @media screen and (max-width: 1050px) {
     gap: 19px;
   }
+}
 
-  .block-title__title {
-    color: #484848;
-    font-size: size(36px);
-    font-weight: 400;
-    word-wrap: break-word;
-    @media screen and (max-width: 1050px) {
-      font-size: 24px;
-    }
-
-    span {
-      color: #5660ac;
-    }
+.block-title__title {
+  color: #484848;
+  font-size: size(36px);
+  font-weight: 400;
+  word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    font-size: 24px;
   }
 
-  .block-title__span {
-    color: rgba(0, 0, 0, 0.3);
-    font-size: size(14px);
-    font-weight: 400;
+  span {
+    color: #5660ac;
+  }
+}
+
+.block-title__span {
+  color: rgba(0, 0, 0, 0.3);
+  font-size: size(14px);
+  font-weight: 400;
+  word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    font-size: 14px;
+  }
+}
+
+.user__inputs {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: size(20px);
+}
+
+.user__title {
+  color: #5761AD;
+  font-size: size(23px);
+  font-weight: 400;
+  word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    font-size: 23px;
+
+  }
+}
+
+.input__container {
+  width: 100%;
+  @include flex-col-start();
+  gap: size(8px);
+
+  label {
+    color: #5761AE;
+    font-size: size(13px);
+    font-weight: 300;
+    line-height: 18.20px;
     word-wrap: break-word;
-    @media screen and (max-width: 1050px) {
-      font-size: 14px;
-    }
+  }
+
+  input {
+    width: 100%;
+    padding: size(15px) size(18px);
+    background: #F6F6F6;
+    border-radius: 5px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
+    color: rgba(0, 0, 0, 0.40);
+    font-size: size(14px);
+    font-weight: 300;
+    line-height: 140%;
+    word-wrap: break-word;
+  }
+
+  span {
+    font-size: size(14px);
+    color: red;
   }
 }
 

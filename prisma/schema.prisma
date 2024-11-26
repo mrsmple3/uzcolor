@@ -1,22 +1,39 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  name      String
-  phone     String     @unique
-  password  String
-  favorites Favorite[]
-  Cart      Cart?
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String?
+  phone        String         @unique
+  password     String
+  favorites    Favorite[]
+  Cart         Cart?
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  RefreshToken RefreshToken[]
 
   @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("refresh_token")
 }
 
 model DefineProduct {
@@ -40,6 +57,7 @@ model DefineProduct {
   Favorite    Favorite[]
   CartItem    CartItem[]
 
+  @@index([categoryId])
   @@map("define_products")
 }
 
@@ -68,6 +86,8 @@ model Favorite {
   product   DefineProduct @relation(fields: [productId], references: [id])
   createdAt DateTime      @default(now())
 
+  @@index([userId])
+  @@index([productId])
   @@map("favorites")
 }
 
@@ -88,5 +108,7 @@ model CartItem {
   cart      Cart          @relation(fields: [cartId], references: [id])
   product   DefineProduct @relation(fields: [productId], references: [id])
 
+  @@index([cartId])
+  @@index([productId])
   @@map("cart_items")
 }
