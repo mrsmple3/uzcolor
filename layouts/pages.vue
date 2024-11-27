@@ -20,6 +20,7 @@
 
 <script lang="ts" setup>
 const route = useRoute();
+
 const links = [
   {
     label: "Home",
