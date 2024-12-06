@@ -1,6 +1,6 @@
 import {getCookie} from 'h3';
 import {getRefreshTokenByToken} from "~/server/db/refreshTokens";
-import {decodeRefreshToken, generateTokens} from "~/server/utils/jwt";
+import {generateTokens} from "~/server/utils/jwt";
 import {getUserById} from "~/server/db/users";
 
 export default defineEventHandler(async (event) => {
@@ -12,12 +12,15 @@ export default defineEventHandler(async (event) => {
             return sendError(event, createError({statusCode: 401, statusMessage: 'Токен не найден'}));
         }
 
-        const rToken = await getRefreshTokenByToken(refreshToken);
 
-        const token = decodeRefreshToken(refreshToken);
+        const rToken = await getRefreshTokenByToken(refreshToken);
+        if (!rToken) {
+            return sendError(event, createError({statusCode: 401, statusMessage: 'Токен не найден'}));
+        }
+
 
         try {
-            const user = await getUserById(token.userId);
+            const user = await getUserById(rToken.userId);
             const {accessToken} = generateTokens(user);
             return {accessToken: accessToken};
         } catch (error) {

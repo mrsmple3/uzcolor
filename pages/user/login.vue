@@ -5,20 +5,18 @@
       <div class="input__container">
         <label for="name">ФИО</label>
         <Field id="name" v-model="userData.name" name="name" placeholder="Введите ваши данные"
-               rules="required"
                type="text"/>
         <ErrorMessage class="text-red-600" name="name"/>
       </div>
       <div class="input__container">
         <label for="phone">Телефон</label>
         <Field id="phone" v-model="userData.phone" v-mask="'+###(##) ###-##-##'" name="phone"
-               placeholder="Номер телефона"
-               rules="required|min" type="text"/>
+               placeholder="Номер телефона" type="text"/>
         <ErrorMessage class="text-red-600" name="phone"/>
       </div>
       <div class="input__container">
         <label for="email">Электронная почта</label>
-        <Field id="email" v-model="userData.email" name="email" placeholder="Email" rules="required|email"
+        <Field id="email" v-model="userData.email" name="email" placeholder="Email" rules="email"
                type="text"/>
         <ErrorMessage class="text-red-600" name="email"/>
       </div>
@@ -28,9 +26,9 @@
 </template>
 
 <script lang="ts" setup>
-import {useProductStore} from "~/store/product.store";
 import {email, required} from "@vee-validate/rules";
 import {defineRule, ErrorMessage, Field, Form, useForm} from "vee-validate";
+import {type User, useUserStore} from "~/store/user.auth";
 
 defineRule("required", required);
 defineRule("email", email);
@@ -40,19 +38,26 @@ definePageMeta({
   layout: "pages",
 });
 
-const userStore = useProductStore();
+const userStore = useUserStore();
+
+const toast = useToast();
 
 const {handleSubmit} = useForm();
 
-const userData = {
-  name: "",
-  phone: "",
-  email: "",
-};
+const userData = ref<User>(userStore.$state.user);
 
-const createUser = () => {
-  userStore.createUser(userData);
-  console.log('userData')
+watch(() => userStore.$state.user, (user) => {
+  userData.value = user;
+}, {immediate: true, deep: true});
+
+const createUser = async () => {
+  try {
+    await userStore.updateProfile(userData.value).then(() => {
+      toast.add({title: "Данные успешно сохранены ", type: "success"});
+    });
+  } catch (error) {
+    toast.add({title: "Произошла ошибка ", type: "error"});
+  }
 };
 
 const submitForm = handleSubmit(createUser);

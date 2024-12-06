@@ -23,10 +23,10 @@
           variant="none"/>
       <div class="flex items-center gap-3.5 not-mobile">
         <NuxtLink class="social-media__item" to="/">
-          <UIcon class="social-media-icon" name="ic:baseline-telegram"/>
+          <NuxtImg class="social-media-icon" src="/imgs/icons/socialmedia-maincolor-1.svg"/>
         </NuxtLink>
         <NuxtLink class="social-media__item" to="/">
-          <UIcon class="social-media-icon" name="entypo-social:vk-with-circle"/>
+          <NuxtImg class="social-media-icon" src="/imgs/icons/socialmedia-maincolor-2.svg"/>
         </NuxtLink>
         <NuxtLink class="social-media__item" to="/">
           <NuxtImg class="social-media-icon" src="/imgs/icons/socialmedia-maincolor-3.svg"/>
@@ -49,18 +49,23 @@
       </div>
 
       <div class="flex items-center gap-4">
-        <NuxtLink class="actions" to="/">
+        <button class="actions" @click.prevent="withUserAccess('/user/login')">
           <NuxtImg src="/imgs/icons/profile.svg"/>
-        </NuxtLink>
-        <UChip class="action__chip" color="red" position="bottom-right" size="2xl" text="1">
-          <NuxtLink class="actions" to="/">
+        </button>
+        <UChip :show="userStore.totalSavedProducts > 0" :text="userStore.totalSavedProducts" class="action__chip"
+               color="red"
+               position="bottom-right"
+               size="2xl">
+          <button class="actions" @click.prevent="withUserAccess('/saved')">
             <NuxtImg src="/imgs/icons/like.svg"/>
-          </NuxtLink>
+          </button>
         </UChip>
-        <UChip class="action__chip" color="red" position="bottom-right" size="2xl" text="23">
-          <NuxtLink class="actions" to="/">
+        <UChip :show="userStore.totalCartItems > 0" :text="userStore.totalCartItems" class="action__chip" color="red"
+               position="bottom-right"
+               size="2xl">
+          <button class="actions" @click.prevent="withUserAccess('/cart')">
             <NuxtImg src="/imgs/icons/cart.svg"/>
-          </NuxtLink>
+          </button>
         </UChip>
       </div>
     </header>
@@ -71,24 +76,27 @@
           <UIcon class="ml-2.5" name="solar:alt-arrow-down-linear"/>
         </div>
         <div :class="{ active: subActive }" class="submenu">
-          <CatalogComponent :submenus="menuItem.submenu"/>
+          <CatalogComponent @click="subActive = false"/>
         </div>
       </div>
-      <NuxtLink class="submenu__title" to="/">
-        Пошив изделий
-        <UIcon class="ml-2.5" name="solar:alt-arrow-down-linear"/>
+      <NuxtLink v-for="(menuItem, index) in menuSecond" :key="index"
+                :class="{active: activeSecondSubmenu === index && menuItem.submenu.length > 0}"
+                :to="menuItem.link" class="submenu__title"
+                @mouseenter="activeSecondSubmenu = index"
+                @mouseleave="activeSecondSubmenu = null">
+        <UIcon v-if="menuItem.icon" :name="menuItem.icon" class="mr-2.5"/>
+
+        {{ menuItem.menu }}
+
+        <UIcon v-if="menuItem.submenu.length > 0" class="ml-2.5" name="solar:alt-arrow-down-linear"/>
+
+        <div class="submenu">
+          <NuxtLink v-for="submenuItem in menuItem.submenu" :to="submenuItem.link" class="submenu__link"
+                    @click="activeSecondSubmenu = null">
+            {{ submenuItem.name }}
+          </NuxtLink>
+        </div>
       </NuxtLink>
-      <NuxtLink class="submenu__title" to="/">
-        <UIcon class="mr-2.5" name="material-symbols-light:percent-rounded"/>
-        Скидки и акции
-      </NuxtLink>
-      <NuxtLink class="submenu__title" to="/">
-        О компании
-        <UIcon class="ml-2.5" name="solar:alt-arrow-down-linear"/>
-      </NuxtLink>
-      <NuxtLink class="submenu__title" to="/"> Блог</NuxtLink>
-      <NuxtLink class="submenu__title" to="/"> Прайс-лист / образцы</NuxtLink>
-      <NuxtLink class="submenu__title" to="/"> Контакты</NuxtLink>
     </div>
     <div class="mobile__mobile not-desktop">
       <UInput
@@ -101,8 +109,8 @@
           size="xl"
           variant="none"/>
       <UDropdown :items="items" :popper="{ placement: 'bottom-start' }" class="lang">
-        <UButton class="lang__btn" color="black" label="RU" trailing-icon="i-heroicons-chevron-down-20-solid"
-                 variant="ghost">
+        <UButton :ui="{size: 'xs'}" class="lang__btn" color="black" label="RU"
+                 trailing-icon="i-heroicons-chevron-down-20-solid" variant="ghost">
           <template #leading>
             <NuxtImg class="w-6 h-6" src="https://api.iconify.design/emojione:flag-for-russia.svg"/>
           </template>
@@ -110,6 +118,18 @@
       </UDropdown>
     </div>
     <div class="mobile-menu not-desktop">
+      <div class="mobile-navbar">
+        <h4 class="navbar__title">Категории</h4>
+        <div class="navbar__container">
+          <button class="navbar__link">
+            <span>Трикотажное полотно</span>
+            <UIcon class="icon" name="ic:round-keyboard-arrow-down"/>
+          </button>
+          <div class="navbar__submenu">
+            <NuxtLink class="navbar__submenu__item" to="/">Манжеты</NuxtLink>
+          </div>
+        </div>
+      </div>
       <div class="social-medias">
         <div class="social-media">
           <span class="media__span"> Номер телефона </span>
@@ -142,7 +162,15 @@
 </template>
 
 <script lang="ts" setup>
+import {useUserStore} from "~/store/user.auth";
+
 const searchRef = ref("");
+
+const router = useRouter();
+
+const popupState = useState("popupState");
+
+const userStore = useUserStore();
 
 const items = [
   [
@@ -169,132 +197,61 @@ const menu = ref([
   {
     menu: "Каталог продукции",
     submenuActive: false,
+  },
+]);
+
+const activeSecondSubmenu = ref<number | null>(null);
+
+const menuSecond = ref([
+  {
+    menu: "Пошив изделий",
+    link: "",
+    icon: null,
+    submenu: [],
+  },
+  {
+    menu: "Скидки и акции",
+    link: "sell",
+    icon: "/path/to/discount-icon.svg",
+    submenu: [],
+  },
+  {
+    menu: "О компании",
+    link: "/about",
+    icon: null,
     submenu: [
-      {
-        title: "Трикотажное полотно",
-        list: [
-          {
-            title: "Кулирная гладь",
-            link: "/",
-          },
-          {
-            title: "Интрелок",
-            link: "/",
-          },
-          {
-            title: "Рибана",
-            link: "/",
-          },
-          {
-            title: "Пике",
-            link: "/",
-          },
-          {
-            title: "Кашкорсе",
-            link: "/",
-          },
-          {
-            title: "Футер-двухнитка",
-            link: "/",
-          },
-          {
-            title: "Футер-рехнитка",
-            link: "/",
-          },
-          {
-            title: "Махра",
-            link: "/",
-          },
-          {
-            title: "Велюр",
-            link: "/",
-          },
-          {
-            title: "Викоза",
-            link: "/",
-          },
-        ],
-      },
-      {
-        title: "Трикотажные ткани",
-        list: [
-          {
-            title: "Саржа",
-            link: "/",
-          },
-          {
-            title: "Поплин",
-            link: "/",
-          },
-          {
-            title: "Сатин",
-            link: "/",
-          },
-          {
-            title: "Страйп сатин",
-            link: "/",
-          },
-          {
-            title: "Бязь",
-            link: "/",
-          },
-          {
-            title: "Муслин",
-            link: "/",
-          },
-          {
-            title: "Твил",
-            link: "/",
-          },
-          {
-            title: "Габардин",
-            link: "/",
-          },
-          {
-            title: "Джинса",
-            link: "/",
-          },
-        ],
-      },
-      {
-        title: "Принтованые ткани",
-        list: [
-          {
-            title: "Чулочные",
-            link: "/",
-          },
-          {
-            title: "Ротационные",
-            link: "/",
-          },
-          {
-            title: "Цифровые",
-            link: "/",
-          },
-        ],
-      },
-      {
-        title: "Фурнитура",
-        list: [
-          {
-            title: "Манжеты",
-            link: "/",
-          },
-          {
-            title: "Вортники",
-            link: "/",
-          },
-          {
-            title: "Шнуры",
-            link: "/",
-          },
-        ],
-      },
+      {name: "Новости", link: "/news"},
     ],
+  },
+  {
+    menu: "Блог",
+    link: "blog",
+    icon: null,
+    submenu: [],
+  },
+  {
+    menu: "Прайс-лист / образцы",
+    link: "price",
+    icon: null,
+    submenu: [],
+  },
+  {
+    menu: "Контакты",
+    link: "contact",
+    icon: null,
+    submenu: [],
   },
 ]);
 
 const isActiveHeader = ref(false);
+
+const withUserAccess = (path: string) => {
+  if (!userStore.isAuthenticated) {
+    popupState.value.autorisation.phone_or_email_autorisation = true;
+  } else {
+    router.push(path);
+  }
+}
 
 function toggleMobile() {
   isActiveHeader.value = !isActiveHeader.value;
@@ -331,6 +288,80 @@ function toggleMobile() {
     padding-bottom: 0;
     overflow: hidden;
     transition: all 0.3s;
+
+    .mobile-navbar {
+      @include flex-col-start();
+      gap: 36px;
+      margin-bottom: 40px;
+
+      .navbar__title {
+        width: 100%;
+        @include flex-center();
+        gap: 15px;
+        color: rgba(255, 255, 255, 0.50);
+        font-size: 15px;
+        font-weight: 400;
+        word-wrap: break-word;
+
+        &::after {
+          content: ' ';
+          width: 100%;
+          height: 0px;
+          border: 1px rgba(255, 255, 255, 0.20) solid;
+        }
+      }
+
+      .navbar__container {
+        width: 100%;
+        @include flex-col-start();
+        gap: 27px;
+      }
+
+      .navbar__link {
+        width: 100%;
+        @include flex-center();
+        color: white;
+        font-size: 18px;
+        font-weight: 400;
+        word-wrap: break-word;
+
+        .icon {
+          min-width: max-content;
+          min-height: max-content;
+          transition: all 0.3s;
+        }
+
+        &.active {
+          .icon {
+            transform: rotate(180deg);
+          }
+        }
+      }
+
+      .navbar__submenu {
+        width: 100%;
+        @include flex-col-start();
+        gap: 15px;
+        padding: 23px 30px;
+
+        .navbar__submenu__item {
+          color: rgba(255, 255, 255, 0.80);
+          font-size: 17px;
+          font-weight: 400;
+          word-wrap: break-word;
+          text-decoration: none;
+          position: relative;
+          padding-left: 20px;
+
+          &::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: rgba(255, 255, 255, 0.80);
+          }
+        }
+      }
+    }
 
     .media__icon {
       filter: brightness(1000%) !important;
@@ -410,6 +441,10 @@ function toggleMobile() {
     .lang__btn {
       color: white;
     }
+
+    .search {
+      width: 80%;
+    }
   }
 }
 
@@ -459,6 +494,7 @@ header {
   font-size: size(14px);
   font-weight: 400;
   word-wrap: break-word;
+  transition: all 0.3s;
   @media screen and (max-width: 1400px) {
     width: auto;
   }
@@ -470,6 +506,8 @@ header {
 }
 
 .social-media-icon {
+  min-width: max-content;
+  min-height: max-content;
   width: 100%;
   height: 100%;
   color: $main-color;
@@ -557,20 +595,19 @@ header {
   }
 
   .submenu__title {
+    position: relative;
     @include flex-center;
-    padding: size(20px) size(46px);
+    padding: size(20px) 0;
     cursor: pointer;
     color: #242848;
     font-size: size(14px);
     font-weight: 400;
     word-wrap: break-word;
     white-space: nowrap;
-    @media screen and (max-width: 1400px) {
-      padding: size(20px) size(26px);
-    }
 
     &:first-child {
       padding-left: size(120px);
+      padding-right: size(26px);
       background: linear-gradient(90deg, #242848 0%, #5761ae 100%);
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
@@ -579,6 +616,35 @@ header {
 
     &:last-child {
       padding-right: size(120px);
+    }
+
+    &.active {
+      .submenu {
+        height: max-content;
+        padding: 15px 20px;
+        overflow: visible;
+      }
+    }
+
+    .submenu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: size(160px);
+      height: 0;
+      padding: 0 20px;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: all 0.3s;
+
+      .submenu__link {
+        color: #242848;
+        font-size: size(14px);
+        font-weight: 400;
+        line-height: 140%;
+      }
     }
   }
 }

@@ -11,10 +11,10 @@ datasource db {
 
 model User {
   id           String         @id @default(cuid())
-  email        String         @unique
+  email        String?        @unique
   name         String?
-  phone        String         @unique
-  password     String
+  phone        String?        @unique
+  password     String?
   favorites    Favorite[]
   Cart         Cart?
   createdAt    DateTime       @default(now()) @map("created_at")
@@ -37,25 +37,24 @@ model RefreshToken {
 }
 
 model DefineProduct {
-  id          String     @id @default(cuid())
-  name        String
-  art         String
-  weight      Int
-  photo       String?
-  price       String
-  type        String
-  composition String
-  params      Json       @default("{}")
-  color       Json       @default("{}")
-  des         String
-  description String
-  count       Int
-  categoryId  String     @map("category_id")
-  category    Category   @relation(fields: [categoryId], references: [id])
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
-  Favorite    Favorite[]
-  CartItem    CartItem[]
+  id               String     @id @default(cuid())
+  name             String
+  art              String
+  weight           Int
+  price            Int
+  type             String
+  composition      String
+  params           Json       @default("{}")
+  color            Json       @default("{}")
+  shortDescription String     @map("short_description")
+  description      String
+  count            Int        @default(10)
+  categoryId       String     @map("category_id")
+  category         Category   @relation(fields: [categoryId], references: [id])
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+  Favorite         Favorite[]
+  CartItem         CartItem[]
 
   @@index([categoryId])
   @@map("define_products")
@@ -82,9 +81,9 @@ model Favorite {
   id        String        @id @default(cuid())
   userId    String
   productId String
+  createdAt DateTime      @default(now())
   user      User          @relation(fields: [userId], references: [id])
   product   DefineProduct @relation(fields: [productId], references: [id])
-  createdAt DateTime      @default(now())
 
   @@index([userId])
   @@index([productId])
@@ -94,8 +93,8 @@ model Favorite {
 model Cart {
   id     String     @id @default(cuid())
   userId String     @unique
-  user   User       @relation(fields: [userId], references: [id])
   items  CartItem[]
+  user   User       @relation(fields: [userId], references: [id])
 
   @@map("carts")
 }
@@ -104,7 +103,9 @@ model CartItem {
   id        String        @id @default(cuid())
   cartId    String
   productId String
-  quantity  Int
+  count     Int
+  color     Json
+  price     Int
   cart      Cart          @relation(fields: [cartId], references: [id])
   product   DefineProduct @relation(fields: [productId], references: [id])
 

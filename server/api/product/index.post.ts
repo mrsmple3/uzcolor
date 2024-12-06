@@ -1,6 +1,4 @@
-import {PrismaClient} from '@prisma/client';
-
-const prisma = new PrismaClient();
+import {prisma} from "~/server/db";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -40,13 +38,11 @@ export default defineEventHandler(async (event) => {
                 art: body.art,
                 weight: body.weight,
                 color: body.color,
-                photo: body.photo,
                 price: body.price,
                 type: body.type,
                 composition: body.composition,
-                des: body.des,
+                shortDescription: body.shortDescription,
                 description: body.description,
-                count: body.count,
                 categoryId: body.categoryId,
                 params: body.params,
             },

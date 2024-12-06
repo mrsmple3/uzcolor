@@ -23,7 +23,8 @@ $conversion-factor: 24px;
 @mixin btn($py, $px, $fon, $color) {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  text-align: center;
   padding: size($py) size($px);
   background: $fon;
   border-radius: $border-radius;

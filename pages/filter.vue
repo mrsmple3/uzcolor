@@ -1,56 +1,65 @@
 <template>
-  <div class="filter">
-    <div class="filter__container">
-      <div class="filter__content">
-        <div v-if="currentCategory" class="dropdown">
-          <input :value="currentCategory.name" class="dropdown__current" readonly
-                 @click="isActiveDropDown = !isActiveDropDown"/>
-          <div :class="{ active: isActiveDropDown }" class="dropdown__container">
-            <input v-for="category in productStore.$state.category"
-                   :key="category.id" :class="{active: currentCategory.id === category.id}" :value="category.name"
-                   readonly @click="handleCategory(category.id)"/>
+  <div>
+    <UBreadcrumb
+        :links="links"
+        :ui="{
+          base: 'font-normal',
+          li: '!text-[#4f4f4f]',
+          active: '!text-[#4f4f4f]/50',
+          inactive: 'hover:!text-[#4f4f4f]/50'
+			  }"
+        class="breadcrumbs"
+        divider="/"/>
+    <div class="filter">
+      <div class="filter__container">
+        <div class="filter__content">
+          <div v-if="currentCategory" class="dropdown">
+            <input :value="currentCategory.name" class="dropdown__current" readonly
+                   @click="isActiveDropDown = !isActiveDropDown"/>
+            <div :class="{ active: isActiveDropDown }" class="dropdown__container">
+              <input v-for="category in productStore.$state.category"
+                     :key="category.id" :class="{active: currentCategory.id === category.id}" :value="category.name"
+                     readonly @click="handleCategory(category.id)"/>
+            </div>
           </div>
-        </div>
-
-        <button class="not-desktop filter-mobile" @click="mobileFilter = true">
-          <NuxtImg src="/imgs/icons/filter-icon.svg"/>
-          <h4 class="title">Фильтр</h4>
-        </button>
-
-        <div :class="{active: mobileFilter}" class="filter__content__container">
-          <div class="w-full flex items-center justify-between">
+          <button class="not-desktop filter-mobile" @click="mobileFilter = true">
+            <NuxtImg src="/imgs/icons/filter-icon.svg"/>
             <h4 class="title">Фильтр</h4>
-            <button class="filter__btn" to="/" @click="handleFilter">Применить</button>
-          </div>
-          <div class="filter__content__container__list">
-            <div v-for="filter in toFilter" :key="filter.id"
-                 class="w-full flex flex-col items-start">
-              <h6 class="list__title">{{ filter.name }}</h6>
-              <div v-for="filterItem in filter.filters" :key="filterItem.name"
-                   class="form__material__item">
-                <UCheckbox :label="filterItem.name" :model-value="filterItem.checked"
-                           :ui="{background: '!bg-white'}"
-                           inputClass="form__material__checkbox"
-                           @change="filterItem.checked = !filterItem.checked"/>
+          </button>
+
+          <div :class="{active: mobileFilter}" class="filter__content__container">
+            <div class="w-full flex items-center justify-between">
+              <h4 class="title">Фильтр</h4>
+              <button class="filter__btn" to="/" @click="handleFilter">Применить</button>
+            </div>
+            <div class="filter__content__container__list">
+              <div v-for="filter in toFilter" :key="filter.id"
+                   class="w-full flex flex-col items-start">
+                <h6 class="list__title">{{ filter.name }}</h6>
+                <div v-for="filterItem in filter.filters" :key="filterItem.name"
+                     class="form__material__item">
+                  <UCheckbox :label="filterItem.name" :model-value="filterItem.checked"
+                             :ui="{background: '!bg-white'}"
+                             inputClass="form__material__checkbox"
+                             @change="filterItem.checked = !filterItem.checked"/>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="filter__products">
-        <ProductCard v-for="product in products" :key="product.id" :product="product"/>
+        <div class="filter__products">
+          <ProductCard v-for="product in products" :key="product.id" :product="product"/>
+        </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <script lang="ts" setup>
 import {type CategoryState, type Filter, type ProductState, useProductStore} from "~/store/product.store";
 
-definePageMeta({
-  layout: "pages",
-});
 const productStore = useProductStore();
 
 const mobileFilter = ref(false);
@@ -62,11 +71,62 @@ const products = ref<ProductState[]>(productStore.$state.categoryProducts);
 const currentCategory = ref<CategoryState[]>(productStore.$state.category);
 const toFilter = ref<Filter[]>([]);
 
-onMounted(() => {
-  productStore.getProductsByCategory(route.query.id);
-  productStore.getAllCategory();
-  productStore.getAllFilter();
+const links = ref([
+  {
+    label: "Главная",
+    to: "/",
+  },
+  {
+    label: "Каталог",
+    to: "/catalog",
+  },
+  {
+    label: "",
+  },
+]);
+
+const fetchAndFilterProducts = async (categoryId: string) => {
+  await productStore.getProductsByCategory(categoryId);
+  await productStore.getAllCategory();
+  await productStore.getAllFilter();
+
+  const categoryProducts = productStore.categoryProductsGetter;
+
+  const filters = productStore.filterGetter.map((item) => ({
+    name: item.name,
+    filters: productStore.getCurrentFilters(item, categoryProducts),
+  }));
+
+  // Проверка наличия product_name в route.query и установка соответствующего фильтра в checked
+  if (route.query.product_name) {
+    const productName = route.query.product_name as string;
+    filters.forEach(filter => {
+      filter.filters.forEach(filterItem => {
+        if (filterItem.name === productName) {
+          filterItem.checked = true;
+        }
+      });
+    });
+  }
+
+  products.value = categoryProducts;
+  toFilter.value = filters;
+  links.value[links.value.length - 1].label = productStore.categoryByIdGetter(categoryId)?.name;
+  currentCategory.value = productStore.categoryByIdGetter(categoryId);
+};
+
+onBeforeMount(async () => {
+  await fetchAndFilterProducts(route.query.id as string);
 });
+
+watch(
+    () => route.query.id,
+    async (newId) => {
+      if (newId) {
+        await fetchAndFilterProducts(newId as string);
+      }
+    }
+);
 
 const handleCategory = (id: string) => {
   isActiveDropDown.value = false;
@@ -75,7 +135,6 @@ const handleCategory = (id: string) => {
       id: id,
     },
   });
-  productStore.getProductsByCategory(id);
 };
 
 const handleFilter = async () => {
@@ -87,7 +146,7 @@ const handleFilter = async () => {
       },
       body: JSON.stringify({
         filters: toFilter.value,
-        products: productStore.$state.categoryProducts
+        products: productStore.categoryProductsGetter
       }),
     });
   } catch (error) {
@@ -95,25 +154,7 @@ const handleFilter = async () => {
   }
 };
 
-watch(
-    () => [productStore.$state.categoryProducts, productStore.$state.category, productStore.$state.filter],
-    ([categoryProducts, category, filter]) => {
-      if (filter && categoryProducts) {
-        products.value = categoryProducts;
-
-        toFilter.value = filter.map((item) => ({
-          name: item.name,
-          filters: productStore.getCurrentFilters(item, products.value)
-        }));
-      }
-      if (category) {
-        currentCategory.value = productStore.categoryByIdGetter(route.query.id);
-      }
-    }
-);
-
 const isActiveDropDown = ref(false);
-
 </script>
 
 <style lang="scss" scoped>

@@ -36,7 +36,8 @@
     <div class="catalog">
       <BlockTitle :sub="'Разделы'" :title="'Категории продукции'"/>
       <div class="catalog__container">
-        <NuxtLink v-for="item in productStore.$state.category" :to="'/filter?id=' + item.id" class="catalog__item">
+        <NuxtLink v-for="item in productStore.$state.category" :to="{ path: '/filter', query: {id: item.id} }"
+                  class="catalog__item">
           <NuxtImg :src="item.photo" class="item__img"/>
           <span class="item__span">Категория</span>
           <h3 class="item__title">{{ item.name }}</h3>
@@ -66,7 +67,7 @@
             :space-between="20"
             :speed="1300"
             class="product__container">
-          <SwiperSlide v-for="product in productStore.$state.typeProducts.xit" class="product-card">
+          <SwiperSlide v-for="product in productStore.$state.typeProducts.xit" class="product-card__slide">
             <ProductCard :product="product"/>
           </SwiperSlide>
         </Swiper>
@@ -94,11 +95,11 @@
               nextEl: '.new-product .btn-next',
               prevEl: '.new-product .btn-prev',
             }"
-            :slides-per-view="auto"
+            :slides-per-view="'auto'"
             :space-between="20"
             :speed="1300"
             class="product__container">
-          <SwiperSlide v-for="product in productStore.$state.typeProducts.news" class="product-card">
+          <SwiperSlide v-for="product in productStore.$state.typeProducts.news" lass="product-card__slide">
             <ProductCard :product="product"/>
           </SwiperSlide>
         </Swiper>
@@ -126,11 +127,11 @@
 						nextEl: '.recommendation .btn-next',
 						prevEl: '.recommendation .btn-prev',
 					}"
-            :slides-per-view="auto"
+            :slides-per-view="'auto'"
             :space-between="20"
             :speed="1300"
             class="product__container">
-          <SwiperSlide v-for="product in productStore.$state.typeProducts.recommendation" class="product-card">
+          <SwiperSlide v-for="product in productStore.$state.typeProducts.recommendation" class="product-card__slide">
             <ProductCard :product="product"/>
           </SwiperSlide>
         </Swiper>
@@ -218,16 +219,39 @@
 </template>
 
 <script lang="ts" setup>
-import {type ProductState, useProductStore} from "~/store/product.store";
+import {nextTick} from 'vue';
+import {useProductStore} from '~/store/product.store';
 
 const productStore = useProductStore();
 
-onMounted(() => {
-  productStore.getProductByType('xit');
-  productStore.getProductByType('news');
-  productStore.getProductByType('recommendation');
-  productStore.getAllCategory();
+onBeforeMount(async () => {
+  await Promise.all([
+    productStore.getProductByType('xit'),
+    productStore.getProductByType('news'),
+    productStore.getProductByType('recommendation'),
+    productStore.getAllCategory()
+  ]);
+
+  await nextTick().then(() => {
+    const slides = document.querySelectorAll('.product__container .product-card__slide');
+    console.log("ok", slides);
+    let maxHeight = 0;
+
+    slides.forEach(slide => {
+      const slideHeight = slide.clientHeight;
+      if (slideHeight > maxHeight) {
+        maxHeight = slideHeight;
+      }
+    });
+
+    console.log(maxHeight);
+
+    slides.forEach(slide => {
+      slide.style.height = `${maxHeight}px`;
+    });
+  });
 });
+
 </script>
 
 <style lang="scss" scoped>

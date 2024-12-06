@@ -1,10 +1,5 @@
-import {PrismaClient} from '@prisma/client'
-
-const prisma = new PrismaClient();
+import {prisma} from "~/server/db";
 
 export default defineEventHandler(async (event) => {
-    const categories = await prisma.category.findMany();
-
-    return categories
-
+    return await prisma.category.findMany();
 });

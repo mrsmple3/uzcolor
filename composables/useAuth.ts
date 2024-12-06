@@ -47,6 +47,19 @@ export default () => {
         })
     }
 
+    const getUser = () => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const data = await useFetchApi('/api/auth/user');
+
+                setUser(data);
+                resolve(true);
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
     const initAuth = () => {
         return new Promise(async (resolve, reject) => {
                 try {
@@ -60,6 +73,8 @@ export default () => {
     }
 
     return {
+        useAuthToken,
+        useAuthUser,
         login,
         initAuth,
         refreshToken

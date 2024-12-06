@@ -1,6 +1,4 @@
-import {PrismaClient} from '@prisma/client'
-
-const prisma = new PrismaClient();
+import {prisma} from "~/server/db";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -13,18 +11,6 @@ export default defineEventHandler(async (event) => {
 
         // Delete the product
         const product = await prisma.defineProduct.delete({
-            select: {
-                id: true,
-                name: true,
-                art: true,
-                weight: true,
-                photo: true,
-                type: true,
-                params: true,
-                composition: true,
-                color: true,
-                categoryId: true,
-            },
             where: {id: id},
         });
 

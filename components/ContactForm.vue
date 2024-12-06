@@ -1,6 +1,6 @@
 <template>
   <div class="contact">
-    <NuxtImg class="contact-img" src="/imgs/contact-img.jpg"/>
+    <NuxtImg v-if="isContact" class="contact-img" src="/imgs/contact-img.jpg"/>
     <div class="flex-col-start">
       <BlockTitle :sub="'Контакты'" :title="'Свяжитесь с нами'"/>
       <p class="sub">
@@ -41,29 +41,41 @@
         <NuxtImg class="socmedia__icon" src="/imgs/icons/socialmedia-3.svg"/>
       </div>
     </div>
-    <form>
-      <h3 class="title">Форма обартной связи</h3>
+    <Form @submit="submitForm">
+      <h3 class="title">Форма обратной связи</h3>
       <div class="form__cards">
         <div class="flex flex-col items-start gap-3">
           <span class="input__span">ФИО</span>
-          <input class="input" placeholder="Введите ваши данные" type="text">
+          <Field id="name" v-model="userData.username" class="input" name="name"
+                 placeholder="Введите ваши данные" rules="required"
+                 type="text"/>
+          <ErrorMessage class="text-red-600" name="name"/>
         </div>
         <div class="flex flex-col items-start gap-3">
           <span class="input__span">Телефон</span>
-          <input class="input" placeholder="Номер телефона" type="text">
+          <Field id="phone" v-model="userData.phone" class="input" name="phone"
+                 placeholder="Номер телефона" rules="required|min:10"
+                 type="text"/>
+          <ErrorMessage class="text-red-600" name="phone"/>
         </div>
         <div class="flex flex-col items-start gap-3">
           <span class="input__span">Электронная почта</span>
-          <input class="input" placeholder="Email" type="text">
+          <Field id="email" v-model="userData.email" class="input" name="email"
+                 placeholder="Email" rules="required|email"
+                 type="text"/>
+          <ErrorMessage class="text-red-600" name="email"/>
         </div>
         <div class="flex flex-col items-start gap-3">
           <span class="input__span">Способ доставки</span>
-          <input class="input" placeholder="Самовывоз со склада" type="text">
+          <Field id="delivery" v-model="userData.delivery" class="input" name="delivery"
+                 placeholder="Самовывоз со склада"
+                 rules="required" type="text"/>
+          <ErrorMessage class="text-red-600" name="delivery"/>
         </div>
       </div>
       <span class="form__span">Выберите необходимые материалы</span>
       <div class="form__material">
-        <div v-for="(item, index) in formMaterials" class="form__material__item">
+        <div v-for="(item, index) in formMaterials" :key="index" class="form__material__item">
           <UCheckbox :id="'check'+ index"
                      :label="item.name" :model-value="item.checked"
                      :ui="{background: '!bg-[#f4f4f4]'}"
@@ -71,32 +83,46 @@
         </div>
       </div>
       <div class="flex-center gap-[30px]">
-        <NuxtLink class="form__btn" to="/">
+        <button class="form__btn" type="submit">
           Оставить заявку →
-        </NuxtLink>
+        </button>
         <span class="form__sub">Нажимая на кнопку, вы соглашаетесь на обработку ваших персональных данных</span>
       </div>
-    </form>
+    </Form>
   </div>
 </template>
 
 <script lang="ts" setup>
+import {defineRule, ErrorMessage, Field, Form} from "vee-validate";
+import {email, min, required} from "@vee-validate/rules";
+
+defineRule("required", required);
+defineRule("email", email);
+defineRule("min", min);
+
+const userData = ref({
+  username: '',
+  phone: '',
+  email: '',
+  delivery: ''
+});
+
 const formMaterials = ref([
-  {
-    checked: false,
-    name: 'Карта цветов'
-  },
-  {
-    checked: false,
-    name: 'Образцы тканей'
-  },
-  {
-    checked: false,
-    name: 'Прайс-лист'
-  },
+  {checked: false, name: 'Карта цветов'},
+  {checked: false, name: 'Образцы тканей'},
+  {checked: false, name: 'Прайс-лист'},
 ]);
 
+const submitForm = () => {
+  // Логика отправки формы
+  alert('Форма отправлена');
+};
 
+defineProps({
+  isContact: {
+    type: Boolean
+  }
+});
 </script>
 
 

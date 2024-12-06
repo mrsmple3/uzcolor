@@ -1,5 +1,6 @@
 import {decodeAccessToken} from "~/server/utils/jwt";
 import {getUserById} from "~/server/db/users";
+import {userTransformer} from "~/server/transformers/user";
 
 export default defineEventHandler(async (event) => {
     const token = event.req.headers['authorization']?.split(' ')[1];
@@ -15,9 +16,10 @@ export default defineEventHandler(async (event) => {
     try {
         const userId = decoded.userId;
 
-        return await getUserById(userId);
+        const user = await getUserById(userId);
+
+        return userTransformer(user);
     } catch (error) {
         return sendError(event, createError({statusCode: 500, statusMessage: 'Внутренняя ошибка сервера ' + error}));
     }
-
 })

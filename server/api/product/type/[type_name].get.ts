@@ -11,7 +11,6 @@ export default defineEventHandler(async (event) => {
             name: true,
             art: true,
             weight: true,
-            photo: true,
             type: true,
             composition: true,
             color: true,

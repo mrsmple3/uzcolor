@@ -1,15 +1,29 @@
 <template>
   <div>
     <NuxtLayout>
-      <AutorisationPopup/>
+      <AutorisationByPhoneOrEmailPopup/>
+      <LoginByPassword/>
       <NuxtPage/>
     </NuxtLayout>
+    
+    <UNotifications/>
   </div>
 </template>
 
 <script lang="ts" setup>
-const popupActive = useState('popup__active');
-onMounted(() => {
+import {useUserStore} from "~/store/user.auth";
+
+const popupState = useState('popupState', () => ({
+  autorisation: {
+    phone_or_email_autorisation: false,
+    login_by_password: false,
+  },
+}));
+
+const userStore = useUserStore();
+
+onBeforeMount(() => {
+  userStore.initAuth();
 });
 </script>
 

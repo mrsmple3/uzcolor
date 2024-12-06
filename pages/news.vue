@@ -1,16 +1,35 @@
 <template>
-  <div class="news">
-    <BlockTitle :sub="'Новости компании'" :title="'Все новости'"/>
-    <div class="news__cards">
-      <NewsCard/>
+  <div>
+    <UBreadcrumb
+        :links="links"
+        :ui="{
+          base: 'font-normal',
+          li: '!text-[#4f4f4f]',
+          active: '!text-[#4f4f4f]/50',
+          inactive: 'hover:!text-[#4f4f4f]/50'
+			  }"
+        class="breadcrumbs"
+        divider="/"/>
+    <div class="news">
+      <BlockTitle :sub="'Новости компании'" :title="'Все новости'"/>
+      <div class="news__cards">
+        <NewsCard/>
+      </div>
     </div>
   </div>
+
 </template>
 
 <script lang="ts" setup>
-definePageMeta({
-  layout: "pages",
-});
+const links = [
+  {
+    label: "Главная",
+    to: "/",
+  },
+  {
+    label: "Новости",
+  },
+];
 </script>
 
 <style lang="scss" scoped>

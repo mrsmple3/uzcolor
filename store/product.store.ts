@@ -4,7 +4,6 @@ export interface ProductState {
     art: string;
     weight: number;
     color: object;
-    photo?: string;
     type: string;
     composition: string;
     params: Array<{
@@ -19,17 +18,9 @@ export interface ProductState {
 
 export interface DefineProductState extends ProductState {
     price: string;
-    des: string;
+    short_description: string;
     description: string;
     count: number;
-}
-
-export interface User {
-    id: string;
-    name: string;
-    phone: string;
-    email: string;
-    password: string;
 }
 
 export interface CategoryState {
@@ -65,7 +56,6 @@ const defaultValue: {
     category: CategoryState[];
     filter: FilterState[];
     defineProduct: DefineProductState;
-    user: User
 } = {
     products: [],
     typeProducts: {
@@ -82,24 +72,16 @@ const defaultValue: {
         art: "",
         weight: 0,
         color: {},
-        photo: "",
         type: "",
         composition: "",
         params: [],
         categoryId: "",
         createdAt: "",
         price: "",
-        des: "",
+        short_description: "",
         description: "",
         count: 0,
     },
-    user: {
-        id: "",
-        name: "",
-        phone: "",
-        email: "",
-        password: "",
-    }
 };
 
 export const useProductStore = defineStore("product", {
@@ -107,12 +89,15 @@ export const useProductStore = defineStore("product", {
     getters: {
         productsGetter: (state) => state.products,
         typeProductsGetter: (state) => state.typeProducts,
-        catalogProductsGetter: (state) => state.categoryProducts,
+        categoryProductsGetter: (state) => state.categoryProducts,
         filterGetter: (state) => state.filter,
         categoryGetter: (state) => state.category,
         categoryByIdGetter: (state) => (id: string) => {
             return state.category.find((category) => category.id === id);
         },
+        getIdCategoryByNameCategory: (state) => (name: string) => {
+            return state.category.find((category) => category.name === name)?.id;
+        }
     },
     actions: {
         async setProduct(product: ProductState) {
@@ -207,10 +192,17 @@ export const useProductStore = defineStore("product", {
         },
         getCurrentFilters(filter: FilterState, products: ProductState[]) {
             if (products.length === 0 || filter === undefined) {
-                return;
+                return [];
             }
-            return products.map((product) => ({
-                name: product.params.find((param) => param.title === filter.name)?.param.name || "",
+            const uniqueFilters = new Set<string>();
+            products.forEach((product) => {
+                const paramName = product.params.find((param) => param.title === filter.name)?.param.name;
+                if (paramName) {
+                    uniqueFilters.add(paramName);
+                }
+            });
+            return Array.from(uniqueFilters).map((name) => ({
+                name,
                 checked: false,
             }));
         },
@@ -225,47 +217,5 @@ export const useProductStore = defineStore("product", {
                 throw error;
             }
         },
-        async createUser(user: User) {
-            try {
-                return await $fetch<User>("/api/user", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(user),
-                });
-            } catch (error) {
-                console.error("Error creating user:", error);
-                throw error;
-            }
-        }
-        // async sendVerificationCode(phoneNumber: string) {
-        // 	try {
-        // 		return await $fetch("/api/verification/send", {
-        // 			method: "POST",
-        // 			headers: {
-        // 				"Content-Type": "application/json",
-        // 			},
-        // 			body: JSON.stringify({ phoneNumber }),
-        // 		});
-        // 	} catch (error) {
-        // 		console.error("Error sending verification code:", error);
-        // 		throw error;
-        // 	}
-        // },
-        // async checkVerificationCode(phoneNumber: string, code: string) {
-        // 	try {
-        // 		return await $fetch("/api/verification/check", {
-        // 			method: "POST",
-        // 			headers: {
-        // 				"Content-Type": "application/json",
-        // 			},
-        // 			body: JSON.stringify({ phoneNumber, code }),
-        // 		});
-        // 	} catch (error) {
-        // 		console.error("Error checking verification code:", error);
-        // 		throw error;
-        // 	}
-        // },
     },
 });
