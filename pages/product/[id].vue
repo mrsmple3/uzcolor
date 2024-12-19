@@ -21,7 +21,7 @@
           <NuxtImg :src="currentImg.img" class="product__card__img"/>
         </div>
         <div class="right">
-          <div class="w-full flex items-center justify-between mb-5">
+          <div class="w-full flex items-center justify-between mb-5 mobile-flex-col">
             <p class="art">Арт. {{ product.art }}</p>
 
             <div class="tabs">
@@ -36,7 +36,7 @@
             <span>сум/м</span></h2>
           <p class="product__type">{{ tabs[activeTab].name }}</p>
           <p class="sub">
-            {{ product.short_description }}
+            {{ product.shortDescription }}
           </p>
           <Swiper
               :modules="[SwiperAutoplay, SwiperNavigation]"
@@ -67,9 +67,9 @@
               <span class="count__span">Количество, м</span>
               <div class="count">
                 <NuxtImg class="count__btn" src="/imgs/icons/minus-circle.svg"
-                         @click="product.count > 1 && product.count--"/>
-                <input :value="product.count" class="count__value"/>
-                <NuxtImg class="count__btn" src="/imgs/icons/plus-circle.svg" @click="product.count++"/>
+                         @click="decrease"/>
+                <input :value="product.count" class="count__value" readonly/>
+                <NuxtImg class="count__btn" src="/imgs/icons/plus-circle.svg" @click="increase"/>
               </div>
             </div>
             <button class="right__btn">Оформить заказ</button>
@@ -178,6 +178,22 @@ const computedPrice = computed(() => {
   return product.value.price * product.value.count;
 });
 
+const increase = async () => {
+  product.value.count++;
+  if (isActiveCart.value) {
+    await productStore.updateProductCount(product.value.id, product.value.count);
+  }
+}
+
+const decrease = async () => {
+  if (product.value.count > 1) {
+    product.value.count--;
+    if (isActiveCart.value) {
+      await productStore.updateProductCount(product.value.id, product.value.count);
+    }
+  }
+}
+
 let activeTab = ref<number>(0);
 
 const links = [
@@ -217,8 +233,9 @@ const toCartProduct = async () => {
     });
   } else {
     await userStore.setCart(userStore.userGetter.id, product.value.id, product.value.count, currentImg.value, computedPrice.value)
-        .then(() => {
+        .then(async () => {
           isActiveCart.value = true;
+          await productStore.updateProductCount(product.value.id, product.value.count);
         });
   }
 };
@@ -250,6 +267,7 @@ onBeforeMount(async () => {
       isActiveCart.value = cartItems.some(cartItem => cartItem.productId === product.value.id);
     }
   });
+  links[links.length - 1].label = product.value.name;
   await productStore.getProductByType("recommendation");
 });
 </script>
@@ -420,19 +438,6 @@ onBeforeMount(async () => {
       @include flex-col-start();
     }
 
-    .count__span {
-      color: rgba(36, 40, 72, 0.7);
-      font-size: size(13px);
-      font-weight: 400;
-      line-height: 110%;
-      word-wrap: break-word;
-      margin-bottom: size(17px);
-      @media screen and (max-width: 1050px) {
-        font-size: 13px;
-        margin-bottom: 17px;
-      }
-    }
-
     .flex-col-start {
       margin-right: size(32px);
       @media screen and (max-width: 1050px) {
@@ -458,25 +463,7 @@ onBeforeMount(async () => {
         }
       }
 
-      .count__value {
-        width: size(60px);
-        height: size(35px);
-        text-align: center;
-        background: white;
-        border-right: 5px;
-        color: black;
-        font-size: size(16px);
-        font-weight: 400;
-        line-height: 110%;
-        word-wrap: break-word;
-        border-radius: 5px;
-        white-space: nowrap;
-        @media screen and (max-width: 1050px) {
-          width: 82px;
-          padding: 15px 30px;
-          font-size: 23px;
-        }
-      }
+
     }
 
     .right__btn {
@@ -584,6 +571,9 @@ onBeforeMount(async () => {
       font-weight: 300;
       line-height: 160%;
       word-wrap: break-word;
+      @media screen and (max-width: 1050px) {
+        font-size: 14px;
+      }
     }
   }
 
@@ -605,6 +595,9 @@ onBeforeMount(async () => {
   font-weight: 400;
   line-height: 150%;
   word-wrap: break-word;
+  @media screen and (max-width: 1050px) {
+    font-size: 15px;
+  }
 
   span {
     color: #FF1616;
@@ -618,6 +611,14 @@ onBeforeMount(async () => {
   @media screen and (max-width: 1050px) {
     @include main-container();
     gap: 42px;
+  }
+}
+
+.mobile-flex-col {
+  @media screen and (max-width: 1050px) {
+    @include flex-col-start();
+    flex-direction: column-reverse;
+    gap: 46px;
   }
 }
 </style>

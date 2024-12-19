@@ -10,7 +10,7 @@
           <div class="count">
             <NuxtImg class="count__btn" src="/imgs/icons/minus-circle.svg"
                      @click="decreaseCount"/>
-            <input :value="cart.count" class="count__value"/>
+            <input :value="cart.product.count" class="count__value"/>
             <NuxtImg class="count__btn" src="/imgs/icons/plus-circle.svg" @click="increaseCount"/>
           </div>
         </div>
@@ -23,6 +23,8 @@
 </template>
 
 <script lang="ts" setup>
+import {useProductStore} from "~/store/product.store";
+
 const cartProp = defineProps({
   cart: {
     type: Object,
@@ -32,19 +34,25 @@ const cartProp = defineProps({
 
 const emit = defineEmits(['update-price']);
 
+const productStore = useProductStore();
+
 const formattedPrice = computed(() => {
   return cartProp.cart.product.price * cartProp.cart.count;
 });
 
-const decreaseCount = () => {
+const decreaseCount = async () => {
   if (cartProp.cart.count > 1) {
     cartProp.cart.count--;
+    cartProp.cart.product.count--;
+    await productStore.updateProductCount(cartProp.cart.product.id, cartProp.cart.product.count);
     emit('update-price', cartProp.cart);
   }
 };
 
-const increaseCount = () => {
+const increaseCount = async () => {
   cartProp.cart.count++;
+  cartProp.cart.product.count++;
+  await productStore.updateProductCount(cartProp.cart.product.id, cartProp.cart.product.count);
   emit('update-price', cartProp.cart);
 };
 </script>
@@ -131,16 +139,6 @@ const increaseCount = () => {
     }
   }
 
-  .count__span {
-    color: rgba(36, 40, 72, 0.7);
-    font-size: size(13px);
-    font-weight: 400;
-    line-height: 110%;
-    word-wrap: break-word;
-    @media screen and (max-width: 1050px) {
-      font-size: 13px;
-    }
-  }
 
   .count {
     @include flex-center();
@@ -156,26 +154,6 @@ const increaseCount = () => {
       @media screen and (max-width: 1050px) {
         width: 34px;
         height: 34px;
-      }
-    }
-
-    .count__value {
-      width: size(60px);
-      height: size(35px);
-      text-align: center;
-      background: white;
-      border-right: 5px;
-      color: black;
-      font-size: size(16px);
-      font-weight: 400;
-      line-height: 110%;
-      word-wrap: break-word;
-      border-radius: 5px;
-      white-space: nowrap;
-      @media screen and (max-width: 1050px) {
-        width: 82px;
-        padding: 15px 30px;
-        font-size: 23px;
       }
     }
   }

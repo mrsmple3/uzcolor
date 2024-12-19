@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
         const {userId} = event.context.params;
 
         if (!userId) {
-            throw new sendError(event, createError({statusCode: 400, statusMessage: 'Не указан userId'}));
+            throw new Error('Идентификатор пользователя обязателен');
         }
 
         // Получаем корзину пользователя
@@ -21,16 +21,12 @@ export default defineEventHandler(async (event) => {
         });
 
         if (!cart) {
-            throw new sendError(event, createError({statusCode: 404, statusMessage: 'Корзина не найдена'}));
+            throw new Error('Корзина не найдена');
         }
 
         return cart;
     } catch (error) {
-        console.error('Error fetching cart:', error);
-        sendError(event, createError({
-            statusCode: 500,
-            statusMessage: 'Ошибка при получении корзины: ' + error.message
-        }));
+        throw new Error('Ошибка получения корзины: ' + error.message);
         throw error;
     } finally {
         await prisma.$disconnect();

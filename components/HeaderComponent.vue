@@ -76,7 +76,7 @@
           <UIcon class="ml-2.5" name="solar:alt-arrow-down-linear"/>
         </div>
         <div :class="{ active: subActive }" class="submenu">
-          <CatalogComponent @click="subActive = false"/>
+          <CatalogComponent :to-filter="toFilter" @click="subActive = false"/>
         </div>
       </div>
       <NuxtLink v-for="(menuItem, index) in menuSecond" :key="index"
@@ -118,44 +118,68 @@
       </UDropdown>
     </div>
     <div class="mobile-menu not-desktop">
-      <div class="mobile-navbar">
-        <h4 class="navbar__title">Категории</h4>
-        <div class="navbar__container">
-          <button class="navbar__link">
-            <span>Трикотажное полотно</span>
-            <UIcon class="icon" name="ic:round-keyboard-arrow-down"/>
-          </button>
-          <div class="navbar__submenu">
-            <NuxtLink class="navbar__submenu__item" to="/">Манжеты</NuxtLink>
+      <div class="w-full flex flex-col items-start overflow-y-auto">
+        <div class="mobile-navbar">
+          <h4 class="navbar__title">Категории</h4>
+          <div v-for="(menuItem, index) in toFilter" :key="index"
+               :class="{active: activeMobileSubmenu === menuItem.name && menuItem.filters.length > 0}"
+               class="navbar__container"
+               @click="activeMobileSubmenu === menuItem.name ?  activeMobileSubmenu= null : activeMobileSubmenu = menuItem.name">
+            <button class="navbar__link">
+              <span>{{ menuItem.name }}</span>
+              <UIcon v-if="menuItem.filters.length > 0" class="icon" name="ic:round-keyboard-arrow-down"/>
+            </button>
+            <div class="navbar__submenu">
+              <NuxtLink v-for="submenuItem in menuItem.filters" class="navbar__submenu__item" to="/">
+                {{ submenuItem.name }}
+              </NuxtLink>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="social-medias">
-        <div class="social-media">
-          <span class="media__span"> Номер телефона </span>
-          <div class="w-full flex items-center gap-5">
-            <NuxtImg class="media__icon" src="/imgs/icons/phone-main-colo.svg"/>
-            <NuxtLink class="media__title" target="_blank" to="tel: +998 90 999-99-99">+998 90 999-99-99</NuxtLink>
+        <div class="mobile-navbar">
+          <h4 class="navbar__title">Навигация</h4>
+          <div v-for="(menuItem, index) in menuSecond" :key="index"
+               :class="{active: activeMobileSubmenu === menuItem.menu && menuItem.submenu.length > 0}"
+               class="navbar__container"
+               @click="activeMobileSubmenu === menuItem.menu ?  activeMobileSubmenu= null : activeMobileSubmenu = menuItem.menu">
+            <button class="navbar__link">
+              <span>{{ menuItem.menu }}</span>
+              <UIcon v-if="menuItem.submenu.length > 0" class="icon" name="ic:round-keyboard-arrow-down"/>
+            </button>
+            <div class="navbar__submenu">
+              <NuxtLink v-for="submenuItem in menuItem.submenu" :to="submenuItem.link" class="navbar__submenu__item">
+                {{ submenuItem.name }}
+              </NuxtLink>
+            </div>
           </div>
         </div>
-        <div class="social-media">
-          <span class="media__span"> Email </span>
-          <div class="w-full flex items-center gap-5">
-            <NuxtImg class="media__icon" src="/imgs/icons/mail.svg"/>
-            <NuxtLink class="media__title" target="_blank" to="mailto: info@uzcolor.uz">info@uzcolor.uz</NuxtLink>
+        <div class="social-medias">
+          <div class="social-media">
+            <span class="media__span"> Номер телефона </span>
+            <div class="w-full flex items-center gap-5">
+              <NuxtImg class="media__icon" src="/imgs/icons/phone-main-colo.svg"/>
+              <NuxtLink class="media__title" target="_blank" to="tel: +998 90 999-99-99">+998 90 999-99-99</NuxtLink>
+            </div>
+          </div>
+          <div class="social-media">
+            <span class="media__span"> Email </span>
+            <div class="w-full flex items-center gap-5">
+              <NuxtImg class="media__icon" src="/imgs/icons/mail.svg"/>
+              <NuxtLink class="media__title" target="_blank" to="mailto: info@uzcolor.uz">info@uzcolor.uz</NuxtLink>
+            </div>
+          </div>
+          <div class="social-media">
+            <span class="media__span"> Адрес </span>
+            <div class="w-full flex items-center gap-5">
+              <address>Тестовое поле адреса</address>
+            </div>
           </div>
         </div>
-        <div class="social-media">
-          <span class="media__span"> Адрес </span>
-          <div class="w-full flex items-center gap-5">
-            <address>Тестовое поле адреса</address>
-          </div>
+        <div class="socmedia">
+          <NuxtImg class="socmedia__icon" src="/imgs/icons/socialmedia-1.svg"/>
+          <NuxtImg class="socmedia__icon" src="/imgs/icons/socialmedia-2.svg"/>
+          <NuxtImg class="socmedia__icon" src="/imgs/icons/socialmedia-3.svg"/>
         </div>
-      </div>
-      <div class="socmedia">
-        <NuxtImg class="socmedia__icon" src="/imgs/icons/socialmedia-1.svg"/>
-        <NuxtImg class="socmedia__icon" src="/imgs/icons/socialmedia-2.svg"/>
-        <NuxtImg class="socmedia__icon" src="/imgs/icons/socialmedia-3.svg"/>
       </div>
     </div>
   </div>
@@ -163,6 +187,7 @@
 
 <script lang="ts" setup>
 import {useUserStore} from "~/store/user.auth";
+import {type Filter, useProductStore} from "~/store/product.store";
 
 const searchRef = ref("");
 
@@ -200,6 +225,29 @@ const menu = ref([
   },
 ]);
 
+const productStore = useProductStore();
+
+const toFilter = ref<Filter[]>([]);
+
+onBeforeMount(async () => {
+  if (productStore.categoryGetter.length === 0) {
+    await productStore.getAllCategory();
+  }
+
+  const categories = productStore.categoryGetter;
+
+  toFilter.value = await Promise.all(categories.map(async (category) => {
+    const products = await productStore.getProductsByCategory(category.id);
+    const filters = productStore.getCurrentFilters({name: 'Полотно'}, products);
+    return {
+      name: category.name,
+      filters,
+    };
+  }));
+});
+
+const activeMobileSubmenu = ref<string | null>(null);
+
 const activeSecondSubmenu = ref<number | null>(null);
 
 const menuSecond = ref([
@@ -221,11 +269,12 @@ const menuSecond = ref([
     icon: null,
     submenu: [
       {name: "Новости", link: "/news"},
+      {name: "Вакансии", link: "/vacation"},
     ],
   },
   {
     menu: "Блог",
-    link: "blog",
+    link: "/blog",
     icon: null,
     submenu: [],
   },
@@ -286,10 +335,11 @@ function toggleMobile() {
     height: 0;
     padding-top: 0;
     padding-bottom: 0;
-    overflow: hidden;
+    overflow-y: auto;
     transition: all 0.3s;
 
     .mobile-navbar {
+      width: 100%;
       @include flex-col-start();
       gap: 36px;
       margin-bottom: 40px;
@@ -314,7 +364,22 @@ function toggleMobile() {
       .navbar__container {
         width: 100%;
         @include flex-col-start();
-        gap: 27px;
+        gap: 0;
+        transition: all 0.3s;
+
+        &.active {
+          gap: 27px;
+
+          .icon {
+            transform: rotate(180deg);
+          }
+
+          .navbar__submenu {
+            height: max-content;
+            padding: 23px 30px;
+            overflow: visible;
+          }
+        }
       }
 
       .navbar__link {
@@ -331,18 +396,17 @@ function toggleMobile() {
           transition: all 0.3s;
         }
 
-        &.active {
-          .icon {
-            transform: rotate(180deg);
-          }
-        }
+
       }
 
       .navbar__submenu {
         width: 100%;
         @include flex-col-start();
+        height: 0;
         gap: 15px;
-        padding: 23px 30px;
+        padding: 0 30px;
+        overflow: hidden;
+        transition: all 0.3s;
 
         .navbar__submenu__item {
           color: rgba(255, 255, 255, 0.80);
@@ -414,7 +478,7 @@ function toggleMobile() {
     }
 
     .mobile-menu {
-      height: max-content;
+      height: 82vh;
       padding-top: 20px;
       padding-bottom: 66px;
       overflow-y: auto;
@@ -520,8 +584,11 @@ header {
     padding: 0;
   }
 
-  #headlessui-menu-items-v-0-1 {
-    background: #fff;
+  span {
+    font-size: size(15px) !important;
+    @media screen and (max-width: 1050px) {
+      font-size: 20px !important;
+    }
   }
 }
 
@@ -580,6 +647,8 @@ header {
     @include main-container();
     height: 0;
     width: 100vw;
+    @include flex-col-start();
+    gap: 10px;
     padding-top: 0;
     padding-bottom: 0;
     overflow: hidden;

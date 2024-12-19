@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
         const {productId, count, color, price} = await readBody(event);
 
         if (!userId || !productId || !count || !price || !color) {
-            throw new sendError(event, createError({statusCode: 400, statusMessage: 'Не все поля заполнены'}));
+            throw new Error('User ID, product ID, count, color, and price are required');
         }
 
         // Ensure the user exists
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
         });
 
         if (!user) {
-            throw new sendError(event, createError({statusCode: 404, statusMessage: 'User not found'}));
+            throw new Error('User not found');
         }
 
         // Add product to cart
@@ -38,12 +38,7 @@ export default defineEventHandler(async (event) => {
 
         return cartItem;
     } catch (error) {
-        console.error('Error adding product to cart:', error);
-        sendError(event, createError({
-            statusCode: 500,
-            statusMessage: 'Ошибка при добавлении товара в корзину: ' + error.message
-        }));
-        throw error;
+        throw new Error('Error adding product to cart: ' + error.message);
     } finally {
         await prisma.$disconnect();
     }

@@ -36,9 +36,7 @@ definePageMeta({
 });
 
 const userStore = useUserStore();
-
 const router = useRouter();
-
 const toast = useToast();
 
 const links = ref([

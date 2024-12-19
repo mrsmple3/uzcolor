@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
         const {name, email, phone, password} = await readBody(event);
 
         if (!email && !phone) {
-            return sendError(event, createError({statusCode: 400, statusMessage: 'Не все поля заполнены'}));
+            throw new Error('Необходимо указать email или телефон');
         }
 
         const userData = {
@@ -20,9 +20,6 @@ export default defineEventHandler(async (event) => {
 
         return userTransformer(user);
     } catch (error) {
-        return {
-            status: 500,
-            body: {error: 'Ошибка при создании пользователя ' + error},
-        };
+        throw new Error('Ошибка создания пользователя: ' + error.message);
     }
 });

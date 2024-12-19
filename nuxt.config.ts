@@ -41,4 +41,7 @@ export default defineNuxtConfig({
     plugins: [
         '~/plugins/vue-the-mask.ts'
     ],
+    colorMode: {
+        preference: 'light'
+    }
 });

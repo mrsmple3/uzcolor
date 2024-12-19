@@ -9,13 +9,13 @@ export default defineEventHandler(async (event) => {
         const refreshToken = getCookie(event, 'refreshToken');
 
         if (!refreshToken) {
-            return sendError(event, createError({statusCode: 401, statusMessage: 'Токен не найден'}));
+            throw new Error('Токен не найден');
         }
 
 
         const rToken = await getRefreshTokenByToken(refreshToken);
         if (!rToken) {
-            return sendError(event, createError({statusCode: 401, statusMessage: 'Токен не найден'}));
+            throw new Error('Токен не найден');
         }
 
 
@@ -24,12 +24,9 @@ export default defineEventHandler(async (event) => {
             const {accessToken} = generateTokens(user);
             return {accessToken: accessToken};
         } catch (error) {
-            return sendError(event, createError({
-                statusCode: 500,
-                statusMessage: 'Внутренняя ошибка сервера ' + error
-            }));
+            throw new Error('Токен не найден');
         }
     } catch (error) {
-        return sendError(event, createError({statusCode: 500, statusMessage: 'Внутренняя ошибка сервера ' + error}));
+        throw new Error('Ошибка обновления токена: ' + error.message);
     }
 })

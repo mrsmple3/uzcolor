@@ -43,11 +43,27 @@
       <label for="file-upload">Реквизиты</label>
       <div class="input__replacer">
         <label class="custom-file-upload" for="file-upload">Прикрепить файлы</label>
-        <Field id="file-upload" v-model="inputData.name" name="file-upload" placeholder="Введите адрес"
-               rules="required"
-               type="file"/>
+        <Field id="file-upload" name="file-upload" placeholder="Введите адрес"
+               rules="required" type="file"
+               @change="handleFileUpload"/>
       </div>
       <ErrorMessage class="text-red-600" name="name"/>
+    </div>
+    <div v-if="uploadedFiles.length > 0" class="input__container">
+      <label>Загруженные файлы</label>
+      <div v-for="(file, index) in uploadedFiles" :key="index" class="show__files">
+        {{ file.file.name }}
+        <div class="flex items-center gap-4">
+          <a :download="file.name" :href="file.url" class="download-file" target="_blank">Скачать</a>
+          <button class="remove-file" @click="removeFile(index)">Удалить</button>
+        </div>
+      </div>
+    </div>
+    <div class="checkboxes">
+      <UCheckbox :label="'Самовывоз со склада'" :ui="{background: '!bg-[#fff]', label: 'font-light !text-black/80'}"
+                 class="" inputClass="form__material__checkbox"/>
+      <UCheckbox :label="'Транспортная компания'" :ui="{background: '!bg-[#fff]', label: 'font-light !text-black/80'}"
+                 inputClass="form__material__checkbox"/>
     </div>
     <button class="btn">Оформить заказ</button>
   </div>
@@ -75,6 +91,25 @@ const inputData = ref({
 defineRule("required", required);
 
 const {handleSubmit} = useForm();
+
+const uploadedFiles = ref<{ file: File, url: string }[]>([]);
+
+const handleFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files) {
+    for (let i = 0; i < target.files.length; i++) {
+      const file = target.files[i];
+      const url = URL.createObjectURL(file);
+      uploadedFiles.value.push({file, url});
+    }
+    console.log(uploadedFiles.value);
+  }
+};
+
+const removeFile = (index: number) => {
+  URL.revokeObjectURL(uploadedFiles.value[index].url);
+  uploadedFiles.value.splice(index, 1);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -156,6 +191,58 @@ const {handleSubmit} = useForm();
 
     input {
       background: white;
+    }
+  }
+
+  .checkboxes {
+    @include flex-col-start();
+    gap: size(14px);
+    margin-bottom: size(55px);
+  }
+
+  .show__files {
+    width: 100%;
+    @include flex-col-start();
+    gap: size(10px);
+    padding: size(13px) size(20px);
+    background: white;
+    border-radius: 5px;
+    color: rgba(0, 0, 0, 0.60);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 18.20px;
+    word-wrap: break-word;
+  }
+
+  .remove-file {
+    @include flex-center();
+    gap: size(5px);
+    color: #FF1616;
+
+    &::before {
+      content: ' ';
+      min-width: max-content;
+      min-height: max-content;
+      width: size(11px);
+      height: size(11px);
+      background: url("/imgs/icons/trash.svg") no-repeat;
+      background-size: cover;
+    }
+  }
+
+  .download-file {
+    color: rgba(57.48, 131.75, 23.06, 0.70);
+    @include flex-center();
+    gap: size(5px);
+
+    &::before {
+      content: ' ';
+      min-width: max-content;
+      min-height: max-content;
+      width: size(11px);
+      height: size(11px);
+      background: url("/imgs/icons/download.svg") no-repeat;
+      background-size: cover;
     }
   }
 

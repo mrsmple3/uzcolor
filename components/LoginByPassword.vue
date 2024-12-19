@@ -45,6 +45,8 @@ defineRule("required", required);
 
 const {handleSubmit} = useForm();
 
+const router = useRouter();
+
 const userStore = useUserStore();
 
 const toast = useToast();
@@ -61,11 +63,11 @@ const popupSubmit = handleSubmit(async () => {
     await userStore.login(inputData.value.title, inputData.value.password)
         .then(() => {
           popupActive.value.autorisation.login_by_password = false;
+          router.push("/user/login");
           toast.add({title: "Вы успешно вошли ", type: "success"});
         });
   } catch (error) {
-    console.log(error);
-    toast.add({title: "Что то пошло не так " + error, type: "error"});
+    toast.add({title: "Что то пошло не так " + error.message, type: "error"});
   }
 });
 </script>

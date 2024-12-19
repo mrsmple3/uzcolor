@@ -7,10 +7,7 @@ export default defineEventHandler(async (event) => {
         const refreshToken = getCookie(event, 'refreshToken');
         await removeRefreshToken(refreshToken);
     } catch (error) {
-        return {
-            status: 500,
-            body: {error: 'Ошибка при выходе из аккаунта: ' + error.message},
-        };
+        throw new Error('Ошибка выхода из аккаунта: ' + error.message);
     }
     sendRefreshToken(event, null);
     return {message: 'Вы успешно вышли из аккаунта'};

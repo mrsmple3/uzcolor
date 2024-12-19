@@ -53,8 +53,8 @@
         </div>
         <div class="flex flex-col items-start gap-3">
           <span class="input__span">Телефон</span>
-          <Field id="phone" v-model="userData.phone" class="input" name="phone"
-                 placeholder="Номер телефона" rules="required|min:10"
+          <Field id="phone" v-model="userData.phone" v-mask="'+###(##) ###-##-##'" class="input"
+                 name="phone" placeholder="Номер телефона" rules="required|min:10"
                  type="text"/>
           <ErrorMessage class="text-red-600" name="phone"/>
         </div>

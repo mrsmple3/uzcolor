@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
         const {name, email, phone, password} = await readBody(event);
 
         if (!id) {
-            return sendError(event, createError({statusCode: 400, statusMessage: 'ID пользователя не указан'}));
+            throw new Error('Не передан ID пользователя');
         }
 
         const updatedUserData = {
@@ -21,9 +21,6 @@ export default defineEventHandler(async (event) => {
 
         return userTransformer(updatedUser);
     } catch (error) {
-        return {
-            status: 500,
-            body: {error: 'Ошибка при обновлении пользователя: ' + error},
-        };
+        throw new Error('Ошибка обновления пользователя: ' + error.message);
     }
 });

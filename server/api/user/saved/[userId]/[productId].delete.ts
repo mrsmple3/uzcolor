@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
         const {userId, productId} = event.context.params;
 
         if (!userId || !productId) {
-            return sendError(event, createError({statusCode: 400, statusMessage: 'Не все поля заполнены'}));
+            throw new Error('Идентификатор пользователя и продукта обязателен');
         }
 
         await prisma.favorite.deleteMany({
@@ -20,9 +20,6 @@ export default defineEventHandler(async (event) => {
             body: {message: 'Продукт успешно удален из избранного'},
         };
     } catch (error) {
-        return {
-            status: 500,
-            body: {error: 'Ошибка при удалении из избранного: ' + error.message},
-        };
+        throw new Error('Ошибка удаления продукта из избранного: ' + error.message);
     }
 });

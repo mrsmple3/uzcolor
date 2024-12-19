@@ -5,7 +5,7 @@
       <LoginByPassword/>
       <NuxtPage/>
     </NuxtLayout>
-    
+
     <UNotifications/>
   </div>
 </template>

@@ -234,7 +234,6 @@ onBeforeMount(async () => {
 
   await nextTick().then(() => {
     const slides = document.querySelectorAll('.product__container .product-card__slide');
-    console.log("ok", slides);
     let maxHeight = 0;
 
     slides.forEach(slide => {
@@ -243,8 +242,6 @@ onBeforeMount(async () => {
         maxHeight = slideHeight;
       }
     });
-
-    console.log(maxHeight);
 
     slides.forEach(slide => {
       slide.style.height = `${maxHeight}px`;

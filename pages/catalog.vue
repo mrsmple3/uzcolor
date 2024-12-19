@@ -13,13 +13,15 @@
     <div class="catalog">
       <BlockTitle :sub="'Разделы'" :title="'Категории продукции'" class="catalog__title"/>
       <div class="catalog__list">
-        <CatalogComponent/>
+        <CatalogComponent :to-filter="toFilter"/>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+
+import {type Filter, useProductStore} from "~/store/product.store";
 
 const links = [
   {
@@ -30,6 +32,27 @@ const links = [
     label: "Каталог",
   },
 ];
+
+const productStore = useProductStore();
+
+const toFilter = ref<Filter[]>([]);
+
+onBeforeMount(async () => {
+  if (productStore.categoryGetter.length === 0) {
+    await productStore.getAllCategory();
+  }
+
+  const categories = productStore.categoryGetter;
+
+  toFilter.value = await Promise.all(categories.map(async (category) => {
+    const products = await productStore.getProductsByCategory(category.id);
+    const filters = productStore.getCurrentFilters({name: 'Полотно'}, products);
+    return {
+      name: category.name,
+      filters,
+    };
+  }));
+});
 </script>
 
 <style lang="scss" scoped>

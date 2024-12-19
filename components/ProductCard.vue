@@ -15,17 +15,17 @@
       <p class="product-card__sub">Арт. {{ product.art }}</p>
     </div>
     <div class="swiper-replacer">
-      <div class="product__btn-prev">
+      <div :class="product.id" class="product__btn-prev">
         <UIcon class="bg-[#5761AD]" name="solar:alt-arrow-left-linear"/>
       </div>
       <Swiper
           :modules="[SwiperAutoplay, SwiperNavigation]"
           :navigation="{
-					nextEl: '.product__btn-next',
-					prevEl: '.product__btn-prev',
+					nextEl: '.product__btn-next.'+product.id,
+					prevEl: '.product__btn-prev.'+product.id,
 				}"
-          :slides-per-view="'5'"
-          :space-between="'8'"
+          :slides-per-view="5"
+          :space-between="8"
           :speed="1300"
           class="slider">
         <SwiperSlide v-for="(material, index) in product.color" :key="index"
@@ -34,7 +34,7 @@
           <NuxtImg :src="material.img" class="slider__img"/>
         </SwiperSlide>
       </Swiper>
-      <div class="product__btn-next">
+      <div :class="product.id" class="product__btn-next">
         <UIcon class="bg-[#5761AD]" name="solar:alt-arrow-right-linear"/>
       </div>
     </div>
@@ -93,6 +93,30 @@ onBeforeMount(async () => {
 </script>
 
 <style lang="scss">
+.product-card__title {
+  color: #404463;
+  font-size: size(16px);
+  font-weight: 400;
+  word-wrap: break-word;
+  margin-bottom: size(14px);
+  @media screen and (max-width: 1050px) {
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+}
+
+.product-card__sub {
+  color: rgba(0, 0, 0, 0.3);
+  font-size: size(13px);
+  font-weight: 400;
+  word-wrap: break-word;
+  margin-bottom: size(15px);
+  @media screen and (max-width: 1050px) {
+    font-size: 13px;
+    margin-bottom: 15px;
+  }
+}
+
 .product-card {
   .product-card__img {
     width: 100%;
@@ -110,29 +134,6 @@ onBeforeMount(async () => {
     }
   }
 
-  .product-card__title {
-    color: #404463;
-    font-size: size(16px);
-    font-weight: 400;
-    word-wrap: break-word;
-    margin-bottom: size(14px);
-    @media screen and (max-width: 1050px) {
-      font-size: 16px;
-      margin-bottom: 14px;
-    }
-  }
-
-  .product-card__sub {
-    color: rgba(0, 0, 0, 0.3);
-    font-size: size(13px);
-    font-weight: 400;
-    word-wrap: break-word;
-    margin-bottom: size(15px);
-    @media screen and (max-width: 1050px) {
-      font-size: 13px;
-      margin-bottom: 15px;
-    }
-  }
 
   .like {
     position: absolute;
@@ -170,101 +171,6 @@ onBeforeMount(async () => {
     }
   }
 
-  .swiper-replacer {
-    position: relative;
-    width: 100%;
-    padding: 0 size(25px);
-    @media screen and (max-width: 1050px) {
-      padding: 0 25px;
-    }
-  }
-}
 
-.slider {
-  width: 100%;
-  @include flex-center();
-
-  .swiper-wrapper {
-    margin-bottom: size(16px);
-    @media screen and (max-width: 1050px) {
-      margin-bottom: 16px;
-    }
-  }
-
-  .slider__item {
-    position: relative;
-    width: size(45px) !important;
-    height: size(45px) !important;
-    @include flex-center;
-    justify-content: center;
-    border-radius: 9999px;
-    border: 2px transparent solid;
-    cursor: pointer;
-    transition: all 0.3s;
-    @media screen and (max-width: 1050px) {
-      width: 41px !important;
-      height: 41px !important;
-    }
-
-    &.active {
-      border-color: white;
-
-      &::after {
-        content: " ";
-        position: absolute;
-        top: 120%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: size(5px);
-        height: size(5px);
-        background: #ff1616;
-        border-radius: 9999px;
-        z-index: 3;
-        @media screen and (max-width: 1050px) {
-          width: 5px;
-          height: 5px;
-        }
-      }
-    }
-  }
-
-  .slider__img {
-    width: 100%;
-    height: 100%;
-    border-radius: 9999px;
-    object-fit: cover;
-  }
-
-  .product__btn-prev,
-  .product__btn-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-80%);
-    width: size(24px);
-    height: size(24px);
-    border-radius: 9999px;
-    background: #fff;
-    @include flex-center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 3;
-    transition: all 0.3s;
-    @media screen and (max-width: 1050px) {
-      width: 24px;
-      height: 24px;
-    }
-
-    &.swiper-button-disabled {
-      width: 0;
-    }
-  }
-
-  .product__btn-prev {
-    left: 0;
-  }
-
-  .product__btn-next {
-    right: 0;
-  }
 }
 </style>

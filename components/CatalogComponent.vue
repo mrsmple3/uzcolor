@@ -18,35 +18,21 @@
 </template>
 
 <script lang="ts" setup>
-import {type Filter, useProductStore} from "~/store/product.store";
+import {useProductStore} from "~/store/product.store";
 
-defineProps({
+const prop = defineProps({
   subActive: {
     type: Boolean,
     default: true,
   },
+  toFilter: {
+    type: Array,
+    default: [],
+    required: true,
+  }
 });
 
 const productStore = useProductStore();
-
-const toFilter = ref<Filter[]>([]);
-
-onBeforeMount(async () => {
-  if (productStore.categoryGetter.length === 0) {
-    await productStore.getAllCategory();
-  }
-
-  const categories = productStore.categoryGetter;
-
-  toFilter.value = await Promise.all(categories.map(async (category) => {
-    const products = await productStore.getProductsByCategory(category.id);
-    const filters = productStore.getCurrentFilters({name: 'Полотно'}, products);
-    return {
-      name: category.name,
-      filters,
-    };
-  }));
-});
 </script>
 
 <style lang="scss" scoped>

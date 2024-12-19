@@ -1,6 +1,5 @@
 <template>
   <NuxtLink class="news__card" to="/">
-    <NuxtImg class="news__card__img" src="/imgs/news-1.jpg"/>
     <div class="news__card__content">
       <div class="flex flex-col items-start gap-6">
         <div class="news__card__date">15.10.2024</div>
@@ -9,6 +8,7 @@
       </div>
       <span class="news__card__read">Читать →</span>
     </div>
+    <NuxtImg class="news__card__img" src="/imgs/news-1.jpg"/>
   </NuxtLink>
 </template>
 
@@ -17,5 +17,5 @@
 </script>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
 </style>

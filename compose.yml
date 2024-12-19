@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    working_dir: /app
+    environment:
+      - DATABASE_URL=postgresql://postgres:muhammadr0jab@localhost:5433/uzcolor?schema=public
+      - TWILIO_AUTH_TOKEN=ACc3e34de6e8d0d28cfecb265f95f199a8
+      - TWILIO_ACCOUNT_SID=VA112c712e4ab7ca4fc3ac5d0474074887
+      - JWT_ACCESS_TOKEN_SECRET=my_super_secret_for_access_token
+      - JWT_REFRESH_TOKEN_SECRET=my_super_secret_for_refresh_token
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: muhammadr0jab
+      POSTGRES_DB: uzcolor
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:

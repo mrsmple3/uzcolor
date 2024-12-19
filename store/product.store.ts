@@ -18,7 +18,7 @@ export interface ProductState {
 
 export interface DefineProductState extends ProductState {
     price: string;
-    short_description: string;
+    shortDescription: string;
     description: string;
     count: number;
 }
@@ -78,7 +78,7 @@ const defaultValue: {
         categoryId: "",
         createdAt: "",
         price: "",
-        short_description: "",
+        shortDescription: "",
         description: "",
         count: 0,
     },
@@ -125,17 +125,14 @@ export const useProductStore = defineStore("product", {
                 throw error;
             }
         },
-        async updateProduct(product: ProductState) {
+        async updateProductCount(productId: string, count: number) {
             try {
-                return await $fetch("/api/product", {
+                await $fetch(`/api/product/${productId}`, {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(product),
+                    body: {count},
                 });
             } catch (error) {
-                console.error("Error updating product:", error);
+                console.error("Error updating product count:", error);
                 throw error;
             }
         },

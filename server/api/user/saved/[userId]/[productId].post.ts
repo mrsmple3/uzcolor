@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
         const {userId, productId} = event.context.params;
 
         if (!userId || !productId) {
-            return sendError(event, createError({statusCode: 400, statusMessage: 'Не все поля заполнены'}));
+            throw new Error('Идентификатор пользователя и продукта обязателен');
         }
 
         return await prisma.favorite.create({
@@ -15,9 +15,6 @@ export default defineEventHandler(async (event) => {
             },
         });
     } catch (error) {
-        return {
-            status: 500,
-            body: {error: 'Ошибка при добавлении в избранное: ' + error.message},
-        };
+        throw new Error('Ошибка добавления продукта в избранное: ' + error.message);
     }
 });

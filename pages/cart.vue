@@ -43,7 +43,7 @@ const links = [
 
 const updateTotalPrice = () => {
   totalPrice.value = userStore.cartGetter.items.reduce((sum, item) => {
-    return sum + item.product.price * item.count;
+    return sum + item.product.price * item.product.count;
   }, 0);
 };
 
