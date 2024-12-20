@@ -65,7 +65,7 @@
       <UCheckbox :label="'Транспортная компания'" :ui="{background: '!bg-[#fff]', label: 'font-light !text-black/80'}"
                  inputClass="form__material__checkbox"/>
     </div>
-    <button class="btn">Оформить заказ</button>
+    <button class="btn" @click="handleSubmit">Оформить заказ</button>
   </div>
 </template>
 

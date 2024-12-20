@@ -13,7 +13,7 @@
     <div class="vacation">
       <BlockTitle :sub="'Все объявления'" :title="'Все вакансии'"/>
       <div class="vacation__list">
-        <VacationCard :link="'/'" :title="'Наименование вакансии'"/>
+        <VacationCard :link="'/vacation-item'" :title="'Наименование вакансии'"/>
       </div>
     </div>
   </div>

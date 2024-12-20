@@ -34,12 +34,21 @@
   height: size(212px);
   background: #F4F4F4;
   border-radius: 5px;
+  @media screen and (max-width: 1050px) {
+    height: auto;
+    @include flex-col-start();
+
+  }
 
   .history-card__img {
     width: size(212px);
     height: 100%;
     border-radius: 2px;
     border: 1px #E8E8E8 solid;
+    @media screen and (max-width: 1050px) {
+      width: 100%;
+      height: 212px;
+    }
   }
 
   .history-card__content {
@@ -47,12 +56,19 @@
     @include flex-col-start();
     justify-content: space-between;
     padding: size(32px) size(32px) size(32px) size(56px);
+    @media screen and (max-width: 1050px) {
+      padding: 20px;
+    }
   }
 
   .history-card__bottom {
     width: 100%;
     @include flex-end();
     justify-content: space-between;
+    @media screen and (max-width: 1050px) {
+      @include flex-col-start();
+      gap: 45px;
+    }
   }
 
   .status {
@@ -68,11 +84,19 @@
     font-weight: 400;
     line-height: 110%;
     word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 13px;
+      gap: 5px;
+    }
   }
 
   .time-past {
     width: size(15px);
     height: size(15px);
+    @media screen and (max-width: 1050px) {
+      width: 15px;
+      height: 15px;
+    }
   }
 
   .success {
@@ -81,6 +105,9 @@
     font-weight: 400;
     line-height: 110%;
     word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 13px;
+    }
   }
 
   .cancel {
@@ -89,6 +116,9 @@
     font-weight: 400;
     line-height: 110%;
     word-wrap: break-word;
+    @media screen and (max-width: 1050px) {
+      font-size: 13px;
+    }
   }
 }
 </style>

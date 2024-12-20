@@ -34,5 +34,9 @@
   .news__card__img {
     border-radius: 5px;
   }
+
+  .news__card__date {
+    background: #F4F4F4;
+  }
 }
 </style>

@@ -255,12 +255,25 @@ const menuSecond = ref([
     menu: "Пошив изделий",
     link: "",
     icon: null,
-    submenu: [],
+    submenu: [
+      {name: "Условия размещения заказов", link: "/conditions-orders"},
+      {name: "Бриф на размещение заказа", link: "/brief-order"},
+    ],
+  },
+  {
+    menu: "Оплата и доставка",
+    link: "",
+    icon: null,
+    submenu: [
+      {name: "Условия оплаты", link: "/payment-terms"},
+      {name: "Условия доставки", link: "/terms-delivery"},
+      {name: "Гарантия качества", link: "/garanty"},
+    ],
   },
   {
     menu: "Скидки и акции",
-    link: "sell",
-    icon: "/path/to/discount-icon.svg",
+    link: "/stock",
+    icon: "material-symbols-light:percent",
     submenu: [],
   },
   {
@@ -269,7 +282,7 @@ const menuSecond = ref([
     icon: null,
     submenu: [
       {name: "Новости", link: "/news"},
-      {name: "Вакансии", link: "/vacation"},
+      {name: "Вакансии", link: "/vacations"},
     ],
   },
   {
@@ -286,9 +299,11 @@ const menuSecond = ref([
   },
   {
     menu: "Контакты",
-    link: "contact",
+    link: "/contact",
     icon: null,
-    submenu: [],
+    submenu: [
+      {name: "Сотрудники", link: "/staff"},
+    ],
   },
 ]);
 
@@ -699,7 +714,7 @@ header {
       position: absolute;
       top: 100%;
       left: 0;
-      width: size(160px);
+      width: size(200px);
       height: 0;
       padding: 0 20px;
       border-radius: 10px;
@@ -713,6 +728,8 @@ header {
         font-size: size(14px);
         font-weight: 400;
         line-height: 140%;
+        word-wrap: break-word;
+        white-space: wrap;
       }
     }
   }
