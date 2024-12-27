@@ -15,6 +15,7 @@ model User {
   name         String?
   phone        String?        @unique
   password     String?
+  role         String?        @default("USER")
   favorites    Favorite[]
   Cart         Cart?
   createdAt    DateTime       @default(now()) @map("created_at")

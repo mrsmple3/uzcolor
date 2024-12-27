@@ -9,6 +9,7 @@ export default defineNuxtConfig({
         "nuxt-swiper",
         "@pinia/nuxt",
         '@vee-validate/nuxt',
+        "shadcn-nuxt"
     ],
     fonts: {
         defaults: {
@@ -42,6 +43,10 @@ export default defineNuxtConfig({
         '~/plugins/vue-the-mask.ts'
     ],
     colorMode: {
-        preference: 'light'
+        preference: 'dark'
+    },
+    shadcn: {
+        prefix: 'UI',
+        componentDir: './components/ui'
     }
 });

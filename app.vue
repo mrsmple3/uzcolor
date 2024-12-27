@@ -1,5 +1,6 @@
 <template>
   <div>
+    <PreLoader v-if="loader.show"/>
     <NuxtLayout>
       <AutorisationByPhoneOrEmailPopup/>
       <LoginByPassword/>
@@ -20,10 +21,19 @@ const popupState = useState('popupState', () => ({
   },
 }));
 
+const route = useRoute();
+const router = useRouter();
+const {loader} = usePreloader();
+
 const userStore = useUserStore();
 
-onBeforeMount(() => {
-  userStore.initAuth();
+onBeforeMount(async () => {
+  await userStore.initAuth().then(() => {
+    if (route.name.includes('admin') && !userStore.isAdmin) {
+      // router.push('/admin/login');
+    }
+  })
+
 });
 </script>
 

@@ -3,18 +3,19 @@ import {userTransformer} from "~/server/transformers/user";
 
 export default defineEventHandler(async (event) => {
     try {
-        const {name, email, phone, password} = await readBody(event);
+        const {name, email, phone, password, role} = await readBody(event);
 
         if (!email && !phone) {
             throw new Error('Необходимо указать email или телефон');
         }
 
-        const userData = {
-            name,
+        let userData = {
             email,
-            phone,
             password,
+            role,
         }
+
+        console.log(userData);
 
         const user = await createUser(userData);
 

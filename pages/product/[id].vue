@@ -41,9 +41,9 @@
           <Swiper
               :modules="[SwiperAutoplay, SwiperNavigation]"
               :navigation="{
-						nextEl: '.product__btn-next',
-						prevEl: '.product__btn-prev',
-					}"
+                nextEl: '.product__btn-next',
+                prevEl: '.product__btn-prev',
+              }"
               :slides-per-view="5"
               :space-between="8"
               :speed="1300"
@@ -153,10 +153,6 @@
 import {type DefineProductState, useProductStore} from "~/store/product.store";
 import {useUserStore} from "~/store/user.auth";
 
-definePageMeta({
-  layout: "pages",
-});
-
 const route = useRoute();
 const productStore = useProductStore();
 const userStore = useUserStore();
@@ -196,7 +192,7 @@ const decrease = async () => {
 
 let activeTab = ref<number>(0);
 
-const links = [
+const links = ref([
   {
     label: "Главная",
     to: "/",
@@ -208,7 +204,7 @@ const links = [
   {
     label: product.value.name
   },
-];
+]);
 
 const tabs = [
   {
@@ -267,7 +263,7 @@ onBeforeMount(async () => {
       isActiveCart.value = cartItems.some(cartItem => cartItem.productId === product.value.id);
     }
   });
-  links[links.length - 1].label = product.value.name;
+  links.value[links.value.length - 1].label = product.value.name;
   await productStore.getProductByType("recommendation");
 });
 </script>
@@ -424,6 +420,8 @@ onBeforeMount(async () => {
   }
 
   .slider {
+    width: max-content;
+    margin: 0;
     margin-bottom: size(42px);
     @media screen and (max-width: 1050px) {
       margin-bottom: 42px;
@@ -432,7 +430,7 @@ onBeforeMount(async () => {
 
   .right__bottom {
     width: 100%;
-    @include flex-center();
+    @include flex-end();
     justify-content: flex-start;
     @media screen and (max-width: 1050px) {
       @include flex-col-start();

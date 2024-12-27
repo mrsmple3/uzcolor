@@ -47,6 +47,7 @@ export default defineEventHandler(async (event) => {
                 params: body.params,
             },
         });
+
         return defineProduct;
     } catch (error) {
         console.error('Error creating product:', error);

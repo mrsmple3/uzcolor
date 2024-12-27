@@ -17,15 +17,10 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script lang="ts" setup>
 import {useUserStore} from "~/store/user.auth";
-
-definePageMeta({
-  layout: "pages",
-});
 
 const links = ref([
   {

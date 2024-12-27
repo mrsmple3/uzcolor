@@ -34,9 +34,6 @@ defineRule("required", required);
 defineRule("email", email);
 defineRule("min", (value: string) => value.length >= 6);
 
-definePageMeta({
-  layout: "pages",
-});
 
 const userStore = useUserStore();
 

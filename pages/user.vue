@@ -14,7 +14,7 @@
       <BlockTitle :sub="'Аккаунт'" :title="'Персональный кабинет'"/>
       <div class="user__container">
         <div class="user__sidebar">
-          <div class="sidebar__item active not-mobile" @click="toggleDropdown">
+          <div class="sidebar__item active not-desktop" @click="toggleDropdown">
             <NuxtImg :src="activeItem.img" class="item__img"/>
             {{ activeItem.title }}
           </div>
@@ -36,10 +36,6 @@
 
 <script lang="ts" setup>
 import {useUserStore} from "~/store/user.auth";
-
-definePageMeta({
-  layout: "pages",
-});
 
 const userStore = useUserStore();
 const router = useRouter();

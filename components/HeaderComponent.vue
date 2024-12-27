@@ -71,9 +71,9 @@
     </header>
     <div class="header__bottom not-mobile">
       <div v-for="menuItem in menu">
-        <div class="submenu__title" @click="subActive = !subActive">
+        <div :class="{active: subActive}" class="submenu__title" @click="subActive = !subActive">
           {{ menuItem.menu }}
-          <UIcon class="ml-2.5" name="solar:alt-arrow-down-linear"/>
+          <UIcon class="arrow-down ml-2.5" name="solar:alt-arrow-down-linear"/>
         </div>
         <div :class="{ active: subActive }" class="submenu">
           <CatalogComponent :to-filter="toFilter" @click="subActive = false"/>
@@ -88,7 +88,7 @@
 
         {{ menuItem.menu }}
 
-        <UIcon v-if="menuItem.submenu.length > 0" class="ml-2.5" name="solar:alt-arrow-down-linear"/>
+        <UIcon v-if="menuItem.submenu.length > 0" class="arrow-down ml-2.5" name="solar:alt-arrow-down-linear"/>
 
         <div class="submenu">
           <NuxtLink v-for="submenuItem in menuItem.submenu" :to="submenuItem.link" class="submenu__link"
@@ -573,6 +573,8 @@ header {
   font-size: size(14px);
   font-weight: 400;
   word-wrap: break-word;
+  border: none;
+  outline: none;
   transition: all 0.3s;
   @media screen and (max-width: 1400px) {
     width: auto;
@@ -707,6 +709,10 @@ header {
         height: max-content;
         padding: 15px 20px;
         overflow: visible;
+      }
+
+      .arrow-down {
+        transform: rotate(180deg);
       }
     }
 

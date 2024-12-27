@@ -68,6 +68,7 @@ export const useUserStore = defineStore("user", {
     state: () => defaultValue,
     getters: {
         userGetter: (state): User => state.user,
+        isAdmin: (state): boolean => state.user.role === 'ADMIN',
         savedProductsGetter: (state): ProductState[] => state.savedProducts,
         totalSavedProducts: (state): number => state.savedProducts.length,
         cartGetter: (state): Cart => state.cart,
@@ -76,14 +77,25 @@ export const useUserStore = defineStore("user", {
         isSavedProduct: (state) => (productId: string) => state.savedProducts.some((product) => product.id === productId),
     },
     actions: {
-        async login(title: string, password: string) {
+        async login(title: string, password: string, role: string = 'USER') {
             try {
-                if (title.includes("@")) {
+                if (role === 'ADMIN') {
                     const response = await $fetch("/api/auth/login", {
                         method: "POST",
                         body: {
                             email: title,
                             password: password,
+                            role: role
+                        },
+                    });
+                    this.$patch({user: response.user, accessToken: response.access_token});
+                }
+                if (title.includes("@")) {
+                    const response = await $fetch("/api/auth/login", {
+                        method: "POST",
+                        body: {
+                            email: title,
+                            password: password
                         },
                     });
                     this.$patch({user: response.user, accessToken: response.access_token});

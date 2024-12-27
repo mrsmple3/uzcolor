@@ -23,6 +23,7 @@ export default defineEventHandler(async (event) => {
             name: true,
             art: true,
             weight: true,
+            price: true,
             type: true,
             composition: true,
             params: true,

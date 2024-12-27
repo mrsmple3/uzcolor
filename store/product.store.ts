@@ -87,7 +87,7 @@ const defaultValue: {
 export const useProductStore = defineStore("product", {
     state: () => defaultValue,
     getters: {
-        productsGetter: (state) => state.products,
+        productsGetter: (state): DefineProductState[] => state.products,
         typeProductsGetter: (state) => state.typeProducts,
         categoryProductsGetter: (state) => state.categoryProducts,
         filterGetter: (state) => state.filter,
