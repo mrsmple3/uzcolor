@@ -9,6 +9,15 @@ export default defineEventHandler(async (event) => {
             throw new Error('Missing required field: id');
         }
 
+        // Delete related favorites
+        await prisma.favorite.deleteMany({
+            where: {productId: id},
+        });
+
+        await prisma.cartItem.deleteMany({
+            where: {productId: id},
+        });
+
         // Delete the product
         const product = await prisma.defineProduct.delete({
             where: {id: id},

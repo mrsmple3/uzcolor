@@ -19,6 +19,7 @@ const popupState = useState('popupState', () => ({
     phone_or_email_autorisation: false,
     login_by_password: false,
   },
+  isEditProductPopup: false,
 }));
 
 const route = useRoute();

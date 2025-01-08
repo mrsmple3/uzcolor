@@ -23,7 +23,7 @@
                 <UIDropdownMenu>
                   <UIDropdownMenuTrigger as-child>
                     <UIButton class="h-7 gap-1" size="sm" variant="outline">
-                      <ListFilter class="h-3.5 w-3.5"/>
+                      <UIcon class="h-3.5 w-3.5" name="material-symbols:filter-alt"/>
                       <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
                             Filter
                           </span>
@@ -42,13 +42,13 @@
                   </UIDropdownMenuContent>
                 </UIDropdownMenu>
                 <UIButton class="h-7 gap-1" size="sm" variant="outline">
-                  <File class="h-3.5 w-3.5"/>
+                  <UIcon class="h-3.5 w-3.5" name="fluent:arrow-export-up-16-filled"/>
                   <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
                         Export
                       </span>
                 </UIButton>
-                <UIButton class="h-7 gap-1" size="sm">
-                  <PlusCircle class="h-3.5 w-3.5"/>
+                <UIButton class="h-7 gap-1" size="sm" @click="addProduct">
+                  <UIcon class="h-3.5 w-3.5" name="ic:baseline-plus"/>
                   <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
                         Add Product
                       </span>
@@ -58,9 +58,9 @@
             <UITabsContent value="all">
               <UICard>
                 <UICardHeader>
-                  <UICardTitle>Products</UICardTitle>
+                  <UICardTitle>Продукты</UICardTitle>
                   <UICardDescription>
-                    Manage your products and view their sales performance.
+                    Управляйте своими продуктами и отслеживайте их продажи.
                   </UICardDescription>
                 </UICardHeader>
                 <UICardContent>
@@ -70,16 +70,16 @@
                         <UITableHead class="hidden w-[100px] sm:table-cell">
                           <span class="sr-only">img</span>
                         </UITableHead>
-                        <UITableHead>Name</UITableHead>
-                        <UITableHead>Composition</UITableHead>
+                        <UITableHead>Название</UITableHead>
+                        <UITableHead>Состав</UITableHead>
                         <UITableHead class="hidden md:table-cell">
-                          Price
+                          Цена
                         </UITableHead>
                         <UITableHead class="hidden md:table-cell">
-                          Art
+                          Арт
                         </UITableHead>
                         <UITableHead class="hidden md:table-cell">
-                          Colors
+                          Категории
                         </UITableHead>
                         <UITableHead>
                           <span class="sr-only">Actions</span>
@@ -111,28 +111,9 @@
                         <UITableCell class="hidden md:table-cell">
                           {{ product.art }}
                         </UITableCell>
-                        <UITableCell class="max-w-[130px] relative hidden md:table-cell">
-                          <div :class="product.id" class="product__btn-prev">
-                            <UIcon class="bg-[#5761AD]" name="solar:alt-arrow-left-linear"/>
-                          </div>
-                          <Swiper
-                              :modules="[SwiperAutoplay, SwiperNavigation]"
-                              :navigation="{
-                                nextEl: '.product__btn-next.'+product.id,
-                                prevEl: '.product__btn-prev.'+product.id,
-                              }"
-                              :slides-per-view="3"
-                              :space-between="8"
-                              :speed="1300"
-                              class="slider">
-                            <SwiperSlide v-for="(material, index) in product.color" :key="index"
-                                         class="slider__item">
-                              <NuxtImg :src="material.img" class="slider__img"/>
-                            </SwiperSlide>
-                          </Swiper>
-                          <div :class="product.id" class="product__btn-next">
-                            <UIcon class="bg-[#5761AD]" name="solar:alt-arrow-right-linear"/>
-                          </div>
+                        <UITableCell v-if="productStore.categoryByIdGetter(product.categoryId)"
+                                     class="max-w-[130px] relative hidden md:table-cell">
+                          {{ productStore.categoryByIdGetter(product.categoryId).name }}
                         </UITableCell>
                         <UITableCell>
                           <UIDropdownMenu>
@@ -148,8 +129,8 @@
                             </UIDropdownMenuTrigger>
                             <UIDropdownMenuContent align="end">
                               <UIDropdownMenuLabel>Actions</UIDropdownMenuLabel>
-                              <UIDropdownMenuItem>Edit</UIDropdownMenuItem>
-                              <UIDropdownMenuItem>Delete</UIDropdownMenuItem>
+                              <UIDropdownMenuItem @click="editProductPopup(product.id)">Edit</UIDropdownMenuItem>
+                              <UIDropdownMenuItem @click="deleteCurrentProduct(product.id)">Delete</UIDropdownMenuItem>
                             </UIDropdownMenuContent>
                           </UIDropdownMenu>
                         </UITableCell>
@@ -168,6 +149,7 @@
             </UITabsContent>
           </UITabs>
         </main>
+        <EditProduct v-if="popupState.isEditProductPopup"/>
       </div>
     </div>
     <main v-else class="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
@@ -201,6 +183,34 @@ definePageMeta({
 });
 
 const productStore = useProductStore();
+
+const popupState = useState('popupState');
+
+const toast = useToast();
+
+const deleteCurrentProduct = async (id: string) => {
+  try {
+    await productStore.deleteProduct(id).then(async () => {
+      await productStore.getAllProducts();
+      toast.add({title: "Удалено ", type: "success"});
+    });
+  } catch (error) {
+    toast.add({title: "Ошибка " + error.message, type: "error"});
+  }
+}
+
+const editProductPopup = async (productId: string) => {
+  try {
+    await productStore.setCurrentProduct(productId).then(() => {
+      popupState.value.isEditProductPopup = true;
+    });
+  } catch (error) {
+    toast.add({title: "Ошибка " + error.message, type: "error"});
+  }
+}
+const addProduct = async () => {
+  
+}
 </script>
 
 <style lang="scss" scoped>

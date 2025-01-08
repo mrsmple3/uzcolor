@@ -56,6 +56,7 @@ const defaultValue: {
     category: CategoryState[];
     filter: FilterState[];
     defineProduct: DefineProductState;
+    currentProduct: DefineProductState;
 } = {
     products: [],
     typeProducts: {
@@ -82,6 +83,22 @@ const defaultValue: {
         description: "",
         count: 0,
     },
+    currentProduct: {
+        id: "",
+        name: "",
+        art: "",
+        weight: 0,
+        color: {},
+        type: "",
+        composition: "",
+        params: [],
+        categoryId: "",
+        createdAt: "",
+        price: "",
+        shortDescription: "",
+        description: "",
+        count: 0,
+    },
 };
 
 export const useProductStore = defineStore("product", {
@@ -91,13 +108,14 @@ export const useProductStore = defineStore("product", {
         typeProductsGetter: (state) => state.typeProducts,
         categoryProductsGetter: (state) => state.categoryProducts,
         filterGetter: (state) => state.filter,
-        categoryGetter: (state) => state.category,
-        categoryByIdGetter: (state) => (id: string) => {
+        categoryGetter: (state): CategoryState[] => state.category,
+        categoryByIdGetter: (state): CategoryState => (id: string) => {
             return state.category.find((category) => category.id === id);
         },
         getIdCategoryByNameCategory: (state) => (name: string) => {
             return state.category.find((category) => category.name === name)?.id;
-        }
+        },
+        getCurrentProduct: (state): DefineProductState => state.currentProduct,
     },
     actions: {
         async setProduct(product: ProductState) {
@@ -107,7 +125,7 @@ export const useProductStore = defineStore("product", {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(product),
+                    body: product,
                 });
             } catch (error) {
                 console.error("Error creating product:", error);
@@ -133,6 +151,39 @@ export const useProductStore = defineStore("product", {
                 });
             } catch (error) {
                 console.error("Error updating product count:", error);
+                throw error;
+            }
+        },
+        async updateProduct(product: DefineProductState) {
+            try {
+                await $fetch(`/api/product/`, {
+                    method: "PUT",
+                    body: product,
+                });
+            } catch (error) {
+                console.error("Error updating product:", error);
+                throw error;
+            }
+        },
+        async setCurrentProduct(productId: string) {
+            try {
+                const response: DefineProductState = await $fetch(`/api/product/${productId}`);
+                this.$patch({currentProduct: response});
+            } catch (error) {
+                console.error("Error setting current product:", error);
+                throw error;
+            }
+        },
+        async deleteProduct(productId: string) {
+            try {
+                await $fetch(`/api/product/`, {
+                    method: "DELETE",
+                    body: {
+                        id: productId
+                    }
+                });
+            } catch (error) {
+                console.error("Error deleting product:", error);
                 throw error;
             }
         },

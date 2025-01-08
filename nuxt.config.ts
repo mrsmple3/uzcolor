@@ -9,7 +9,7 @@ export default defineNuxtConfig({
         "nuxt-swiper",
         "@pinia/nuxt",
         '@vee-validate/nuxt',
-        "shadcn-nuxt"
+        "shadcn-nuxt",
     ],
     fonts: {
         defaults: {
