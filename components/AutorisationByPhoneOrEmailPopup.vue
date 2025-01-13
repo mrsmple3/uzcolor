@@ -7,7 +7,7 @@
                  @click="popupActive.autorisation.phone_or_email_autorisation = false"/>
       </div>
       <div class="input__container">
-        <label for="name">Телефон или почтовый адрес</label>
+        <UILabel for="name">Телефон или почтовый адрес</UILabel>
         <Field id="name" v-model="inputData" name="name"
                placeholder="Введите ваши данные" rules="required"
                type="text"/>

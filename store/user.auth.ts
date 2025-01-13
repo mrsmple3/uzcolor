@@ -131,6 +131,10 @@ export const useUserStore = defineStore("user", {
             try {
                 await this.refreshToken();
                 await this.getUser().then(() => {
+                    if (!this.isAdmin) {
+                        this.getCarts(this.userGetter.id);
+                        this.getFavorites(this.userGetter.id);
+                    }
                     this.getCarts(this.userGetter.id);
                     this.getFavorites(this.userGetter.id);
                 })
@@ -206,7 +210,10 @@ export const useUserStore = defineStore("user", {
         },
         async getFavorites(userId: string) {
             try {
-                const response = await $fetch(`/api/user/saved/${userId}`);
+                if (!userId) {
+                    return;
+                }
+                const response = await $fetch(` /api/user/saved/${userId}`);
                 this.$patch({savedProducts: response as Favorite[]});
             } catch (error) {
                 console.error("Error getting favorites:", error);
@@ -241,6 +248,9 @@ export const useUserStore = defineStore("user", {
         },
         async getCarts(userId: string) {
             try {
+                if (!userId) {
+                    return;
+                }
                 const response: Cart = await $fetch(`/api/user/cart/${userId}`);
                 this.$patch({cart: response});
             } catch (error) {

@@ -1,16 +1,21 @@
 import {decodeAccessToken} from "~/server/utils/jwt";
 import {getUserById} from "~/server/db/users";
 import {userTransformer} from "~/server/transformers/user";
+import {sendError} from "h3";
 
 export default defineEventHandler(async (event) => {
     const token = event.req.headers['authorization']?.split(' ')[1];
     if (!token) {
-        throw new Error('Токен не найден');
+        return {
+            message: 'Токен не найден',
+        }
     }
     const decoded = decodeAccessToken(token);
 
     if (!decoded) {
-        throw new Error('Ошибка декодирования токена');
+        return {
+            message: 'Ошибка декодирования токена',
+        }
     }
 
     try {
@@ -20,6 +25,9 @@ export default defineEventHandler(async (event) => {
 
         return userTransformer(user);
     } catch (error) {
-        throw new Error('Ошибка получения пользователя: ' + error.message);
+        return sendError(event, createError({
+            statusCode: 500,
+            message: 'Ошибка получения пользователя: ' + error.message
+        }));
     }
 })

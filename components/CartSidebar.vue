@@ -5,35 +5,35 @@
     <h4 class="price">{{ totalPrice }} <span>сум</span></h4>
     <h3 class="form__title">Оформление</h3>
     <div class="input__container">
-      <label for="name">ФИО</label>
+      <UILabel for="name">ФИО</UILabel>
       <Field id="name" v-model="inputData.name" name="name" placeholder="Введите ваши данные"
              rules="required"
              type="text"/>
       <ErrorMessage class="text-red-600" name="name"/>
     </div>
     <div class="input__container">
-      <label for="company">Ваша компания</label>
+      <UILabel for="company">Ваша компания</UILabel>
       <Field id="company" v-model="inputData.name" name="company" placeholder="Введите наименование"
              rules="required"
              type="text"/>
       <ErrorMessage class="text-red-600" name="name"/>
     </div>
     <div class="input__container">
-      <label for="phone">Телефон</label>
+      <v for="phone">Телефон</v>
       <Field id="phone" v-model="inputData.name" name="phone" placeholder="Номер телефона"
              rules="required"
              type="text"/>
       <ErrorMessage class="text-red-600" name="name"/>
     </div>
     <div class="input__container">
-      <label for="email">Электронная почта</label>
+      <UILabel for="email">Электронная почта</UILabel>
       <Field id="email" v-model="inputData.name" name="email" placeholder="Email"
              rules="required"
              type="text"/>
       <ErrorMessage class="text-red-600" name="name"/>
     </div>
     <div class="input__container">
-      <label for="address">Адрес</label>
+      <UILabel for="address">Адрес</UILabel>
       <Field id="address" v-model="inputData.name" name="address" placeholder="Введите адрес"
              rules="required"
              type="text"/>

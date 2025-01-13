@@ -3,19 +3,19 @@
     <h1 class="user__title">Личные данные</h1>
     <div class="user__inputs">
       <div class="input__container">
-        <label for="name">ФИО</label>
+        <UILabel for="name">ФИО</UILabel>
         <Field id="name" v-model="userData.name" name="name" placeholder="Введите ваши данные"
                type="text"/>
         <ErrorMessage class="text-red-600" name="name"/>
       </div>
       <div class="input__container">
-        <label for="phone">Телефон</label>
+        <UILabel for="phone">Телефон</UILabel>
         <Field id="phone" v-model="userData.phone" v-mask="'+###(##) ###-##-##'" name="phone"
                placeholder="Номер телефона" type="text"/>
         <ErrorMessage class="text-red-600" name="phone"/>
       </div>
       <div class="input__container">
-        <label for="email">Электронная почта</label>
+        <UILabel for="email">Электронная почта</UILabel>
         <Field id="email" v-model="userData.email" name="email" placeholder="Email" rules="email"
                type="text"/>
         <ErrorMessage class="text-red-600" name="email"/>

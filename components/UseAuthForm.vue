@@ -3,9 +3,9 @@
     <form @submit="onSubmit">
       <div class="grid gap-2">
         <div class="grid gap-1">
-          <Label class="sr-only" for="email">
+          <UILabel class="sr-only" for="login">
             Логин
-          </Label>
+          </UILabel>
           <UIInput
               id="login"
               v-model="formData.login"
@@ -16,9 +16,9 @@
               placeholder="Логин"
               type="login"
           />
-          <Label class="sr-only" for="password">
+          <UILabel class="sr-only" for="password">
             Пароль
-          </Label>
+          </UILabel>
           <UIInput
               id="password"
               v-model="formData.password"
@@ -50,6 +50,8 @@ const formData = ref({
   password: '',
 });
 
+const router = useRouter();
+
 const userStore = useUserStore();
 
 const toast = useToast();
@@ -68,7 +70,7 @@ async function onSubmit(event: Event) {
     await userStore.login(formData.value.login, formData.value.password, "ADMIN")
         .then(() => {
           isLoading.value = false;
-          router.push("/admin");
+          router.push("/admin/products");
           toast.add({title: "Вы успешно вошли ", type: "success"});
         });
   } catch (error) {

@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
         const {productId, count, color, price} = await readBody(event);
 
         if (!userId || !productId || !count || !price || !color) {
-            throw new Error('User ID, product ID, count, color, and price are required');
+            return {message: 'User ID, product ID, count, color, and price are required'};
         }
 
         // Ensure the user exists
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
         });
 
         if (!user) {
-            throw new Error('User not found');
+            return {message: 'User not found'};
         }
 
         // Add product to cart
@@ -38,7 +38,10 @@ export default defineEventHandler(async (event) => {
 
         return cartItem;
     } catch (error) {
-        throw new Error('Error adding product to cart: ' + error.message);
+        return sendError(event, createError({
+            statusCode: 500,
+            statusMessage: 'Error adding product to cart: ' + error.message
+        }));
     } finally {
         await prisma.$disconnect();
     }

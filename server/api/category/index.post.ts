@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
         // Ensure all required fields are provided
         if (!body.name) {
-            throw new Error('Missing required fields');
+            return {message: 'Missing required fields',}
         }
 
         // Create the new category

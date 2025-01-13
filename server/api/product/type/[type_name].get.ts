@@ -2,10 +2,10 @@ import {PrismaClient} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler((event) => {
     const {type_name} = event.context.params;
 
-    const products = await prisma.defineProduct.findMany({
+    return prisma.defineProduct.findMany({
         select: {
             id: true,
             name: true,
@@ -20,6 +20,4 @@ export default defineEventHandler(async (event) => {
             type: type_name
         }
     });
-
-    return products;
 });

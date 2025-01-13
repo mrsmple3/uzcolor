@@ -7,14 +7,14 @@
                  @click="popupActive.autorisation.login_by_password = false"/>
       </div>
       <div class="input__container">
-        <label for="name">Телефон или почтовый адрес</label>
+        <UILabel for="name">Телефон или почтовый адрес</UILabel>
         <Field id="name" v-model="inputData.title" name="name" placeholder="Введите номер или email"
                rules="required"
                type="text"/>
         <ErrorMessage class="text-red-600" name="name"/>
       </div>
       <div class="input__container">
-        <label for="password">Ваш пароль</label>
+        <UILabel for="password">Ваш пароль</UILabel>
         <Field v-slot="{ field }" name="password" rules="required">
           <input id="password" v-model="inputData.password" placeholder="Введите пароль" type="password" v-bind="field">
         </Field>

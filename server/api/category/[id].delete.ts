@@ -2,11 +2,11 @@ import {prisma} from "~/server/db";
 
 export default defineEventHandler(async (event) => {
     try {
-        const {id} = await readBody(event);
+        const {id} = event.context.params;
 
         // Ensure the id is provided
         if (!id) {
-            throw new Error('Missing required field: id');
+            return {message: 'Идентификатор категории обязателен'};
         }
 
         // Delete associated products

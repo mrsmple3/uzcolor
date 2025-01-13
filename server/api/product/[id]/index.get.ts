@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
         });
 
         if (!product) {
-            throw new Error('Product not found');
+            return {message: 'Product not found'};
         }
 
         return product;

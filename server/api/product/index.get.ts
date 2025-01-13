@@ -29,8 +29,9 @@ export default defineEventHandler(async (event) => {
             params: true,
             color: true,
             categoryId: true,
+            show: true,
         },
     });
 
-    return products;
+    return products || [];
 });

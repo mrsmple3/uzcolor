@@ -1,6 +1,5 @@
 <template>
-  <div class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]"
-       @click="popupState.isEditProductPopup = false">
+  <div class="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
     <div class="hidden border-r bg-muted/40 md:block">
       <div class="flex h-full max-h-screen flex-col gap-2">
         <div class="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
@@ -11,42 +10,25 @@
         <div class="flex-1">
           <nav class="grid items-start px-2 text-sm font-medium lg:px-4">
             <NuxtLink
-                active-class="bg-muted"
+                active-class="bg-muted text-primary"
                 class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                to="/"
+                to="/admin/category"
             >
-              Dashboard
+              Категории
             </NuxtLink>
+            <!--            <NuxtLink-->
+            <!--                active-class="bg-muted text-primary"-->
+            <!--                class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"-->
+            <!--                to="/admin/users"-->
+            <!--            >-->
+            <!--              Пользователи-->
+            <!--            </NuxtLink>-->
             <NuxtLink
-                active-class="bg-muted"
-                class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                to="/"
-            >
-              Orders
-              <UIBadge class="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                6
-              </UIBadge>
-            </NuxtLink>
-            <NuxtLink
-                active-class="bg-muted"
-                class="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary"
+                active-class="bg-muted text-primary"
+                class="flex items-center gap-3 rounded-lg text-muted-foreground px-3 py-2 transition-all hover:text-primary"
                 to="/admin/products"
             >
-              Products
-            </NuxtLink>
-            <NuxtLink
-                active-class="bg-muted"
-                class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                to="/"
-            >
-              Customers
-            </NuxtLink>
-            <NuxtLink
-                active-class="bg-muted"
-                class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                to="/"
-            >
-              Analytics
+              Продукты
             </NuxtLink>
           </nav>
         </div>
@@ -61,7 +43,7 @@
                 size="icon"
                 variant="outline"
             >
-              <Menu class="h-5 w-5"/>
+              <UIcon class="h-5 w-5" name="iconamoon:menu-burger-horizontal"/>
               <span class="sr-only">Toggle navigation menu</span>
             </UIButton>
           </UISheetTrigger>
@@ -124,7 +106,7 @@
         <UIDropdownMenu>
           <UIDropdownMenuTrigger as-child>
             <UIButton class="rounded-full" size="icon" variant="secondary">
-              <CircleUser class="h-5 w-5"/>
+              <UIcon class="h-5 w-5" name="material-symbols:account-circle"/>
               <span class="sr-only">Toggle user menu</span>
             </UIButton>
           </UIDropdownMenuTrigger>

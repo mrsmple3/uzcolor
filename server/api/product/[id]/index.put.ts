@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
 
         // Ensure the count field is provided
         if (body.count === undefined) {
-            throw new Error('Missing required field: count');
+            return {message: 'Missing required field: count'};
         }
 
         // Check if the product exists

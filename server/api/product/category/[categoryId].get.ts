@@ -3,7 +3,7 @@ import {prisma} from "~/server/db";
 export default defineEventHandler(async (event) => {
     const {categoryId} = event.context.params;
 
-    const products = await prisma.defineProduct.findMany({
+    return prisma.defineProduct.findMany({
         select: {
             id: true,
             name: true,
@@ -19,6 +19,4 @@ export default defineEventHandler(async (event) => {
             categoryId: categoryId
         }
     });
-
-    return products;
 });

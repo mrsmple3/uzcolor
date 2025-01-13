@@ -5,14 +5,17 @@ export default defineEventHandler(async (event) => {
         const body = await readBody(event);
 
         // Ensure all required fields are provided
-        if (!body.id || !body.name) {
-            throw new Error('Missing required fields');
+        if (!body.id) {
+            return {message: 'Missing required fields',}
         }
 
         // Update the category
         const category = await prisma.category.update({
             where: {id: body.id},
-            data: {name: body.name},
+            data: {
+                name: body.name,
+                photo: body.photo
+            },
         });
 
         return {

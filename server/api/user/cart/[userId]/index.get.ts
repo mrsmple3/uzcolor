@@ -1,11 +1,12 @@
 import {prisma} from "~/server/db";
+import {createError, sendError} from "h3";
 
 export default defineEventHandler(async (event) => {
     try {
         const {userId} = event.context.params;
 
         if (!userId) {
-            throw new Error('Идентификатор пользователя обязателен');
+            return {message: 'Идентификатор пользователя обязателен'};
         }
 
         // Получаем корзину пользователя
@@ -21,13 +22,15 @@ export default defineEventHandler(async (event) => {
         });
 
         if (!cart) {
-            throw new Error('Корзина не найдена');
+            return {message: 'Корзина не найдена'};
         }
 
         return cart;
     } catch (error) {
-        throw new Error('Ошибка получения корзины: ' + error.message);
-        throw error;
+        return sendError(event, createError({
+            statusCode: 500,
+            statusMessage: 'Ошибка получения корзины: ' + error.message
+        }));
     } finally {
         await prisma.$disconnect();
     }

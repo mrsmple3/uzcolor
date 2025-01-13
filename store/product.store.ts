@@ -1,26 +1,26 @@
 export interface ProductState {
-    id: string;
+    id?: string;
     name: string;
     art: string;
     weight: number;
     color: object;
     type: string;
     composition: string;
-    params: Array<{
+    params?: Array<{
         param: {
             name: string;
         };
         title: string;
     }>;
-    categoryId: string;
-    createdAt: string;
+    categoryId?: string;
+    createdAt?: string;
 }
 
 export interface DefineProductState extends ProductState {
-    price: string;
-    shortDescription: string;
-    description: string;
-    count: number;
+    price?: number;
+    shortDescription?: string;
+    description?: string;
+    count?: number;
 }
 
 export interface CategoryState {
@@ -109,24 +109,32 @@ export const useProductStore = defineStore("product", {
         categoryProductsGetter: (state) => state.categoryProducts,
         filterGetter: (state) => state.filter,
         categoryGetter: (state): CategoryState[] => state.category,
-        categoryByIdGetter: (state): CategoryState => (id: string) => {
-            return state.category.find((category) => category.id === id);
-        },
+        categoryByIdGetter:
+            (state): CategoryState =>
+                (id: string) => {
+                    return state.category.find((category) => category.id === id);
+                },
         getIdCategoryByNameCategory: (state) => (name: string) => {
             return state.category.find((category) => category.name === name)?.id;
         },
         getCurrentProduct: (state): DefineProductState => state.currentProduct,
+        getProductProductsByCategory: (state) => {
+            return state.category.map((category) => {
+                return {
+                    category,
+                    products: state.products.filter((product) => product.categoryId === category.id),
+                };
+            });
+        },
     },
     actions: {
-        async setProduct(product: ProductState) {
+        async setProduct(product: DefineProductState) {
             try {
-                return await $fetch<ProductState>("/api/product", {
+                const response = await $fetch<DefineProductState>("/api/product", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                     body: product,
                 });
+                this.$patch({currentProduct: response});
             } catch (error) {
                 console.error("Error creating product:", error);
                 throw error;
@@ -134,9 +142,7 @@ export const useProductStore = defineStore("product", {
         },
         async getAllProducts() {
             try {
-                const response: ProductState[] = await $fetch("/api/product", {
-                    method: "GET",
-                });
+                const response: ProductState[] = await $fetch("/api/product");
                 this.$patch({products: response});
             } catch (error) {
                 console.error("Error getting products:", error);
@@ -179,8 +185,8 @@ export const useProductStore = defineStore("product", {
                 await $fetch(`/api/product/`, {
                     method: "DELETE",
                     body: {
-                        id: productId
-                    }
+                        id: productId,
+                    },
                 });
             } catch (error) {
                 console.error("Error deleting product:", error);
@@ -229,9 +235,7 @@ export const useProductStore = defineStore("product", {
         },
         async getAllFilter() {
             try {
-                const response: FilterState[] = await $fetch("/api/filter", {
-                    method: "GET",
-                });
+                const response: FilterState[] = await $fetch("/api/filter");
                 this.$patch({filter: response});
             } catch (error) {
                 console.error("Error getting filter:", error);
@@ -265,5 +269,66 @@ export const useProductStore = defineStore("product", {
                 throw error;
             }
         },
+        async createCategory(category: CategoryState) {
+            try {
+                const response = await $fetch('/api/category', {
+                    method: 'POST',
+                    body: category,
+                });
+                this.$patch({category: [...this.category, response]});
+            } catch (error) {
+                console.error('Error creating category:', error);
+                throw error;
+            }
+        },
+        async deleteCategory(categoryId: string) {
+            try {
+                await $fetch(`/api/category/${categoryId}`, {
+                    method: 'DELETE',
+                });
+                this.$patch({category: this.category.filter((category) => category.id !== categoryId)});
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                throw error;
+            }
+        },
+        async updateCategory(category: CategoryState) {
+            try {
+                const response = await $fetch('/api/category', {
+                    method: 'PUT',
+                    body: category,
+                });
+                this.$patch({category: this.category.map((item) => item.id === category.id ? category : item)});
+            } catch (error) {
+                console.error('Error updating category:', error);
+                throw error;
+            }
+        },
+        async updateFilter(filter: FilterState) {
+            try {
+                const response = await $fetch('/api/filter', {
+                    method: 'PUT',
+                    body: filter,
+                });
+                if (response.message === 'Фильтр успешно обновлен') {
+                    this.$patch({filter: this.filter.map((item) => item.id === filter.id ? filter : item)});
+                }
+            } catch (error) {
+                console.error('Error updating filter:', error);
+                throw error;
+            }
+        },
+        async deleteFilter(filterId: string) {
+            try {
+                const response = await $fetch(`/api/filter/${filterId}`, {
+                    method: 'DELETE',
+                });
+                if (response.message === 'Фильтр успешно удален')
+                    this.$patch({filter: this.filter.filter((item) => item.id !== filterId)});
+            } catch (error) {
+                console.error('Error deleting filter:', error);
+                throw error;
+            }
+        }
     },
 });

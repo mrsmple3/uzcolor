@@ -6,7 +6,9 @@ export default defineEventHandler(async (event) => {
 
         // Ensure the id is provided
         if (!id) {
-            throw new Error('Missing required field: id');
+            return {
+                message: 'Missing required field: id'
+            }
         }
 
         // Delete related favorites

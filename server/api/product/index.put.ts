@@ -6,16 +6,29 @@ export default defineEventHandler(async (event) => {
 
         // Ensure all required fields are provided
         if (!body.id) {
-            throw new Error('Missing required fields');
+            return {message: "Missing required field: id"};
         }
 
         // Check if the category exists
         const category = await prisma.category.findUnique({
-            where: {id: body.categoryId}
+            where: {id: body.categoryId},
         });
 
         if (!category) {
-            throw new Error('Category not found');
+            return {message: "Category not found"};
+        }
+
+        // Create or find filters based on product parameters
+        for (const param of body.params) {
+            await prisma.filter.upsert({
+                where: {
+                    name: param.title,
+                },
+                update: {},
+                create: {
+                    name: param.title,
+                },
+            });
         }
 
         // Update the product
@@ -34,11 +47,12 @@ export default defineEventHandler(async (event) => {
                 description: true,
                 count: true,
                 categoryId: true,
+                show: true,
                 category: {
                     select: {
                         id: true,
-                        name: true
-                    }
+                        name: true,
+                    },
                 },
                 createdAt: true,
                 updatedAt: true,
@@ -46,27 +60,27 @@ export default defineEventHandler(async (event) => {
             where: {id: body.id},
             data: {
                 name: body.name,
-                composition: body.composition,
+                art: body.art,
                 weight: body.weight,
                 color: body.color,
                 price: body.price,
                 type: body.type,
                 composition: body.composition,
                 params: body.params,
-                color: body.color,
                 shortDescription: body.shortDescription,
                 description: body.description,
                 count: body.count,
+                show: body.show,
                 categoryId: body.categoryId,
             },
         });
 
         return {
-            message: 'Product updated successfully',
-            product
-        }
+            message: "Product updated successfully",
+            product,
+        };
     } catch (error) {
-        console.error('Error updating product:', error);
+        console.error("Error updating product:", error);
         throw error;
     } finally {
         await prisma.$disconnect();
