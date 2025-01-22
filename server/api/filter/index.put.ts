@@ -1,8 +1,10 @@
 import {prisma} from '~/server/db';
 import {createError, readBody, sendError} from 'h3';
+import checkAdmin from "~/server/utils/check";
 
 export default defineEventHandler(async (event) => {
     try {
+        await checkAdmin(event);
         const body = await readBody(event);
 
         // Ensure all required fields are provided

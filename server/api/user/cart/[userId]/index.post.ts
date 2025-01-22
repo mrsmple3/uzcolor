@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
         const {productId, count, color, price} = await readBody(event);
 
         if (!userId || !productId || !count || !price || !color) {
-            return {message: 'User ID, product ID, count, color, and price are required'};
+            throw new Error('User ID, product ID, count, color, and price are required');
         }
 
         // Ensure the user exists
@@ -15,9 +15,9 @@ export default defineEventHandler(async (event) => {
         });
 
         if (!user) {
-            return {message: 'User not found'};
+            throw new Error('User not found');
         }
-
+        
         // Add product to cart
         const cartItem = await prisma.cartItem.create({
             data: {

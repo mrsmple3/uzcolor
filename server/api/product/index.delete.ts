@@ -1,7 +1,10 @@
 import {prisma} from "~/server/db";
+import checkAdmin from "~/server/utils/check";
 
 export default defineEventHandler(async (event) => {
     try {
+        await checkAdmin(event);
+        
         const {id} = await readBody(event);
 
         // Ensure the id is provided

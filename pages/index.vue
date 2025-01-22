@@ -68,7 +68,7 @@
             :speed="1300"
             class="product__container">
           <SwiperSlide v-for="product in productStore.$state.typeProducts.xit" class="product-card__slide">
-            <ProductCard :product="product"/>
+            <ProductCard v-if="product.show" :product="product"/>
           </SwiperSlide>
         </Swiper>
         <div class="btn-next">

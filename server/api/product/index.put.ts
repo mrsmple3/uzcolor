@@ -19,17 +19,33 @@ export default defineEventHandler(async (event) => {
         }
 
         // Create or find filters based on product parameters
+        const filterProducts = [];
         for (const param of body.params) {
-            await prisma.filter.upsert({
-                where: {
-                    name: param.title,
-                },
+            const filter = await prisma.filter.upsert({
+                where: {name: param.filter.name},
                 update: {},
+                create: {name: param.filter.name},
+            });
+
+            const filterProduct = await prisma.filterProduct.upsert({
+                where: {
+                    FilterProductId: {
+                        filterId: filter.id,
+                        defineProductId: body.id,
+                    },
+                },
+                update: {name: param.name},
                 create: {
-                    name: param.title,
+                    name: param.name,
+                    filterId: filter.id,
+                    defineProductId: body.id,
                 },
             });
+
+            filterProducts.push({id: filterProduct.id});
         }
+
+        console.log("filterProducts ", filterProducts);
 
         // Update the product
         const product = await prisma.defineProduct.update({
@@ -41,7 +57,17 @@ export default defineEventHandler(async (event) => {
                 price: true,
                 type: true,
                 composition: true,
-                params: true,
+                params: {
+                    select: {
+                        name: true,
+                        filter: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                    },
+                },
                 color: true,
                 shortDescription: true,
                 description: true,
@@ -66,7 +92,7 @@ export default defineEventHandler(async (event) => {
                 price: body.price,
                 type: body.type,
                 composition: body.composition,
-                params: body.params,
+                params: {connect: filterProducts},
                 shortDescription: body.shortDescription,
                 description: body.description,
                 count: body.count,

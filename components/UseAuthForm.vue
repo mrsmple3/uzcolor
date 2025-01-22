@@ -75,7 +75,7 @@ async function onSubmit(event: Event) {
         });
   } catch (error) {
     isLoading.value = false;
-    toast.add({title: "Что то пошло не так " + error.message, type: "error"});
+    toast.add({title: "Что то пошло не так " + error.statusMessage, color: "red"});
   }
 }
 </script>

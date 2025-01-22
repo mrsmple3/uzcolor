@@ -12,11 +12,10 @@ export default defineEventHandler(async (event) => {
 
         let userData = {
             email,
+            phone,
             password,
             role,
         }
-
-        console.log(userData);
 
         const user = await createUser(userData);
 

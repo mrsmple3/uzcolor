@@ -1,22 +1,24 @@
 <template>
-  <div class="history-card">
-    <NuxtImg alt="" class="history-card__img" src="/imgs/product-1.jpg"/>
+  <div v-for="order in order.items" :key="order.id" class="history-card">
+    <NuxtImg :alt="order.color.name" :src="order.color.img" class="history-card__img"/>
     <div class="history-card__content">
       <div class="flex flex-col items-start">
-        <h2 class="product-card__title">Футер 3-Х Нитка ДИАГОНАЛЬ 85% ХБ 15% ПЭ 320гр</h2>
-        <p class="product-card__sub">Арт. TER382942</p>
+        <h2 class="product-card__title">
+          {{ order.product.name + ' ' + order.product.composition + ' ' + order.product.weight + 'гр' }}
+        </h2>
+        <p class="product-card__sub">Арт. {{ order.product.art }}</p>
       </div>
       <div class="history-card__bottom">
         <div class="flex flex-col items-start">
           <span class="count__span">Количество, м</span>
-          <input class="count__value" readonly value="10"/>
+          <input :value="order.quantity" class="count__value" readonly/>
         </div>
         <div class="status">
           <div class="wait">
             <NuxtImg alt="" class="time-past" src="/imgs/icons/time-past.svg"/>
             Заказ в обработке
           </div>
-          <button class="cancel">Отменить заказ</button>
+          <button class="cancel" @click="deleteOrderItem(order.id)">Отменить заказ</button>
         </div>
       </div>
     </div>
@@ -24,7 +26,20 @@
 </template>
 
 <script lang="ts" setup>
+import {useUserStore} from "~/store/user.auth";
 
+const props = defineProps({
+  order: {
+    type: Object,
+    required: true,
+  },
+});
+const userStore = useUserStore();
+const deleteOrderItem = async (id: string) => {
+  await userStore.deleteOrderItem(id).then(async () => {
+    await userStore.getOrderByUserId(userStore.userGetter.id);
+  })
+}
 </script>
 
 <style lang="scss" scoped>

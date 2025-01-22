@@ -72,7 +72,7 @@
                 <NuxtImg class="count__btn" src="/imgs/icons/plus-circle.svg" @click="increase"/>
               </div>
             </div>
-            <button class="right__btn">Оформить заказ</button>
+            <button class="right__btn" @click="doOrder">Оформить заказ</button>
             <div class="flex-center">
               <button class="cart__btn" @click.prevent="toCartProduct">
                 <NuxtImg :src="isActiveCart ? '/imgs/icons/active-cart.svg' : '/imgs/icons/shopping-cart-blue.svg'"/>
@@ -107,14 +107,14 @@
           <h3 class="product__content__title">Характеристики</h3>
           <table>
             <tr v-for="param in product.params">
-              <td>{{ param.title }}</td>
-              <td>{{ param.param.name }}</td>
+              <td>{{ param.filter.name }}</td>
+              <td>{{ param.name }}</td>
             </tr>
           </table>
         </div>
       </div>
 
-      <div class="recommendation">
+      <div v-if="productStore.$state.typeProducts.recommendation.length > 0" class="recommendation">
         <BlockTitle :sub="'Смотрите также'" :title="'Рекомендации'"/>
         <div class="slider__replacer">
           <div class="btn-prev">
@@ -155,8 +155,10 @@ import {useUserStore} from "~/store/user.auth";
 
 const route = useRoute();
 const productStore = useProductStore();
+const authStore = useUserStore();
 const userStore = useUserStore();
 const popupState = useState("popupState");
+const router = useRouter();
 
 const isActiveCart = ref(false);
 
@@ -222,7 +224,6 @@ function changeMaterial(material: any, index: number) {
 
 const toCartProduct = async () => {
   const cartItem = userStore.cart.items.find(item => item.productId === product.value.id);
-
   if (cartItem) {
     await userStore.deleteCartItem(userStore.userGetter.id, cartItem.id).then(() => {
       isActiveCart.value = false;
@@ -266,6 +267,13 @@ onBeforeMount(async () => {
   links.value[links.value.length - 1].label = product.value.name;
   await productStore.getProductByType("recommendation");
 });
+
+const doOrder = async () => {
+  if (!authStore.getCartItemByIdProduct(product.value.id)) {
+    await toCartProduct();
+  }
+  router.push("/cart");
+}
 </script>
 
 <style lang="scss" scoped>
@@ -515,6 +523,7 @@ onBeforeMount(async () => {
 }
 
 .product__content {
+  width: 100%;
   color: #000;
   @include flex-start();
   gap: size(26px);

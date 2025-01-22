@@ -1,3 +1,5 @@
+import {useFetchApi} from "~/utils/api";
+
 export interface ProductState {
     id?: string;
     name: string;
@@ -7,12 +9,14 @@ export interface ProductState {
     type: string;
     composition: string;
     params?: Array<{
-        param: {
+        filter: {
+            id: string;
             name: string;
         };
-        title: string;
+        name: string;
     }>;
     categoryId?: string;
+    show: boolean;
     createdAt?: string;
 }
 
@@ -41,6 +45,27 @@ export interface Filter {
         name: string;
         checked: boolean;
     };
+}
+
+export interface Order {
+    id: string;
+    userId: string;
+    items: OrderItem[];
+    totalAmount: number;
+    totalPrice: number;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface OrderItem {
+    id: string;
+    orderId: string;
+    productId: string;
+    quantity: number;
+    price: number;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface TypeProducts {
@@ -130,10 +155,11 @@ export const useProductStore = defineStore("product", {
     actions: {
         async setProduct(product: DefineProductState) {
             try {
-                const response = await $fetch<DefineProductState>("/api/product", {
+                const response = await useFetchApi<DefineProductState>("/api/product", {
                     method: "POST",
                     body: product,
                 });
+
                 this.$patch({currentProduct: response});
             } catch (error) {
                 console.error("Error creating product:", error);
@@ -149,6 +175,14 @@ export const useProductStore = defineStore("product", {
                 throw error;
             }
         },
+        async searchProducts(query: string) {
+            try {
+                const response = await useFetchApi(`/api/product?search=${query}`);
+                this.$patch({products: response});
+            } catch (error) {
+                console.error('Ошибка при поиске продуктов:', error.message);
+            }
+        },
         async updateProductCount(productId: string, count: number) {
             try {
                 await $fetch(`/api/product/${productId}`, {
@@ -162,7 +196,7 @@ export const useProductStore = defineStore("product", {
         },
         async updateProduct(product: DefineProductState) {
             try {
-                await $fetch(`/api/product/`, {
+                await useFetchApi(`/api/product/`, {
                     method: "PUT",
                     body: product,
                 });
@@ -182,7 +216,7 @@ export const useProductStore = defineStore("product", {
         },
         async deleteProduct(productId: string) {
             try {
-                await $fetch(`/api/product/`, {
+                await useFetchApi(`/api/product/`, {
                     method: "DELETE",
                     body: {
                         id: productId,
@@ -248,7 +282,7 @@ export const useProductStore = defineStore("product", {
             }
             const uniqueFilters = new Set<string>();
             products.forEach((product) => {
-                const paramName = product.params.find((param) => param.title === filter.name)?.param.name;
+                const paramName = product.params.find((param) => param.filter.name === filter.name)?.filter.name;
                 if (paramName) {
                     uniqueFilters.add(paramName);
                 }
@@ -271,7 +305,7 @@ export const useProductStore = defineStore("product", {
         },
         async createCategory(category: CategoryState) {
             try {
-                const response = await $fetch('/api/category', {
+                const response = await useFetchApi('/api/category', {
                     method: 'POST',
                     body: category,
                 });
@@ -283,7 +317,7 @@ export const useProductStore = defineStore("product", {
         },
         async deleteCategory(categoryId: string) {
             try {
-                await $fetch(`/api/category/${categoryId}`, {
+                await useFetchApi(`/api/category/${categoryId}`, {
                     method: 'DELETE',
                 });
                 this.$patch({category: this.category.filter((category) => category.id !== categoryId)});
@@ -294,7 +328,7 @@ export const useProductStore = defineStore("product", {
         },
         async updateCategory(category: CategoryState) {
             try {
-                const response = await $fetch('/api/category', {
+                const response = await useFetchApi('/api/category', {
                     method: 'PUT',
                     body: category,
                 });
@@ -306,7 +340,7 @@ export const useProductStore = defineStore("product", {
         },
         async updateFilter(filter: FilterState) {
             try {
-                const response = await $fetch('/api/filter', {
+                const response = await useFetchApi('/api/filter', {
                     method: 'PUT',
                     body: filter,
                 });
@@ -320,7 +354,7 @@ export const useProductStore = defineStore("product", {
         },
         async deleteFilter(filterId: string) {
             try {
-                const response = await $fetch(`/api/filter/${filterId}`, {
+                const response = await useFetchApi(`/api/filter/${filterId}`, {
                     method: 'DELETE',
                 });
                 if (response.message === 'Фильтр успешно удален')

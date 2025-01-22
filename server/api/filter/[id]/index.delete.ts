@@ -19,30 +19,6 @@ export default defineEventHandler(async (event) => {
             return sendError(event, createError({statusCode: 404, statusMessage: 'Фильтр не найден'}));
         }
 
-        const products = await prisma.defineProduct.findMany({
-            where: {
-                params: {
-                    some: {
-                        title: filter.name,
-                    }
-                },
-            },
-        });
-
-
-        console.log("Product", products);
-
-        for (const product of products) {
-            const updatedParams = product.params.filter((param: any) => param.title !== filter.name);
-
-            console.log("updatedParams", updatedParams);
-
-            await prisma.defineProduct.update({
-                where: {id: product.id},
-                data: {params: updatedParams},
-            });
-        }
-
         // Delete the filter
         await prisma.filter.delete({
             where: {id: id},

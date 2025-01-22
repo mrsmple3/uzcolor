@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PreLoader v-if="loader.show"/>
+    <PreLoader v-if="loader.show && !route.name.includes('admin')"/>
     <NuxtLayout>
       <AutorisationByPhoneOrEmailPopup/>
       <LoginByPassword/>
@@ -31,7 +31,7 @@ const userStore = useUserStore();
 onBeforeMount(async () => {
   await userStore.initAuth().then(() => {
     if (route.name.includes('admin') && !userStore.isAdmin) {
-      // router.push('/admin/login');
+      router.push('/login');
     }
   })
 

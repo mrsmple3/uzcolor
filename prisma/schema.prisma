@@ -14,6 +14,9 @@ model User {
   email        String?        @unique
   name         String?
   phone        String?        @unique
+  company      String?
+  address      String?
+  files        String[]
   password     String?
   role         String?        @default("USER")
   favorites    Favorite[]
@@ -21,6 +24,7 @@ model User {
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
   RefreshToken RefreshToken[]
+  Order        Order[]
 
   @@map("users")
 }
@@ -38,28 +42,85 @@ model RefreshToken {
 }
 
 model DefineProduct {
-  id               String     @id @default(cuid())
+  id               String          @id @default(cuid())
   name             String
-  art              String     @default(cuid())
+  art              String          @default(cuid())
   weight           Int
   price            Int
   type             String
   composition      String
-  params           Json       @default("{}")
-  color            Json       @default("{}")
-  show             Boolean    @default(true)
-  shortDescription String     @map("short_description")
+  params           FilterProduct[]
+  color            Json            @default("{}")
+  show             Boolean         @default(true)
+  shortDescription String          @map("short_description")
   description      String
-  count            Int        @default(10)
-  categoryId       String     @map("category_id")
-  category         Category   @relation(fields: [categoryId], references: [id])
-  createdAt        DateTime   @default(now()) @map("created_at")
-  updatedAt        DateTime   @updatedAt @map("updated_at")
+  count            Int             @default(10)
+  categoryId       String          @map("category_id")
+  category         Category        @relation(fields: [categoryId], references: [id])
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
   Favorite         Favorite[]
   CartItem         CartItem[]
+  OrderItem        OrderItem[]
 
   @@index([categoryId])
   @@map("define_products")
+}
+
+model Filter {
+  id             String          @id @default(cuid())
+  name           String          @unique
+  show           Boolean         @default(true)
+  filterProducts FilterProduct[]
+
+  @@map("filters")
+}
+
+model FilterProduct {
+  id              Int           @unique @default(autoincrement())
+  name            String
+  filterId        String
+  defineProductId String
+  filter          Filter        @relation(fields: [filterId], references: [id], onDelete: Cascade)
+  defineProduct   DefineProduct @relation(fields: [defineProductId], references: [id], onDelete: Cascade)
+
+  @@id(name: "FilterProductId", [filterId, defineProductId])
+  @@index([filterId])
+  @@index([defineProductId])
+  @@map("filter_products")
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  items       OrderItem[]
+  totalAmount Int
+  totalPrice  Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String        @id @default(cuid())
+  orderId   String
+  order     Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   DefineProduct @relation(fields: [productId], references: [id])
+  quantity  Int
+  status    String        @default("Заказ в обработке")
+  type      String        @default("Самовывоз со склада")
+  price     Int
+  color     Json          @default("{}")
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
 }
 
 model Category {
@@ -69,14 +130,6 @@ model Category {
   DefineProduct DefineProduct[]
 
   @@map("categories")
-}
-
-model Filter {
-  id   String  @id @default(cuid())
-  name String  @unique
-  show Boolean @default(true)
-
-  @@map("filters")
 }
 
 model Favorite {

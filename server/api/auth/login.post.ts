@@ -10,21 +10,21 @@ export default defineEventHandler(async (event) => {
         const {email, password} = body;
 
         if (!email || !password) {
-            return {message: 'Missing required fields'};
+            throw new Error('Missing required fields');
         }
 
         // Is the user already registered?
         const user = await getUserByUsername(email);
 
         if (!user) {
-            return {message: 'User not found'};
+            throw new Error('User not found');
         }
 
         // Compare passwords
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
         if (!isPasswordCorrect) {
-            return {message: 'Invalid password'};
+            throw new Error('Invalid password');
         }
 
         // Generate Tokens
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
             user: userTransformer(user)
         }
     } catch (error) {
-
-        throw new Error('Error logging in: ' + error.message);
+        console.log('Error logging in', error);
+        throw createError({statusCode: 500, statusMessage: error.message});
     }
 });

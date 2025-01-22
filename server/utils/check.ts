@@ -1,31 +1,33 @@
-import {defineEventHandler, sendError} from 'h3';
+import {defineEventHandler} from 'h3';
 import {prisma} from '~/server/db';
-import jwt from 'jsonwebtoken';
 
 const checkAdmin = defineEventHandler(async (event) => {
     const authHeader = event.req.headers['authorization'];
+
     if (!authHeader) {
-        return sendError(event, new Error('Authorization header is missing'));
+        throw createError({statusCode: 401, message: 'Authorization header is missing'});
     }
 
     const token = authHeader.split(' ')[1];
+
     if (!token) {
-        return sendError(event, new Error('Token is missing'));
+        throw createError({statusCode: 401, message: 'Unauthorized'});
     }
 
+    const config = useRuntimeConfig();
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = decodeAccessToken(token);
         const user = await prisma.user.findUnique({
-            where: {id: decoded.id},
+            where: {id: decoded.userId},
         });
 
-        if (!user || user.role !== 'admin') {
-            return sendError(event, new Error('Access denied'));
+        if (!user || user.role !== 'ADMIN') {
+            throw createError({statusCode: 403, message: 'Forbidden'});
         }
 
         event.context.user = user;
     } catch (error) {
-        return sendError(event, new Error('Invalid token'));
+        throw createError({statusCode: 401, message: 'Invalid token'});
     }
 });
 

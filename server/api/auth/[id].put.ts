@@ -8,9 +8,7 @@ export default defineEventHandler(async (event) => {
         const {name, email, phone, password} = await readBody(event);
 
         if (!id) {
-            return {
-                message: 'Не передан ID пользователя',
-            }
+            throw new Error('Missing required fields');
         }
 
         const updatedUserData = {

@@ -16,19 +16,19 @@
             >
               Категории
             </NuxtLink>
-            <!--            <NuxtLink-->
-            <!--                active-class="bg-muted text-primary"-->
-            <!--                class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"-->
-            <!--                to="/admin/users"-->
-            <!--            >-->
-            <!--              Пользователи-->
-            <!--            </NuxtLink>-->
             <NuxtLink
                 active-class="bg-muted text-primary"
                 class="flex items-center gap-3 rounded-lg text-muted-foreground px-3 py-2 transition-all hover:text-primary"
                 to="/admin/products"
             >
               Продукты
+            </NuxtLink>
+            <NuxtLink
+                active-class="bg-muted text-primary"
+                class="flex items-center gap-3 rounded-lg text-muted-foreground px-3 py-2 transition-all hover:text-primary"
+                to="/admin/users"
+            >
+              Пользователи
             </NuxtLink>
           </nav>
         </div>
@@ -96,9 +96,10 @@
             <div class="relative">
               <UIcon class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" name="iconamoon:search"/>
               <UIInput
+                  v-model="searchQuery"
                   class="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
-                  placeholder="Search products..."
-                  type="search"
+                  placeholder="Search products..." type="search"
+                  @input="debouncedSearch"
               />
             </div>
           </form>
@@ -116,7 +117,7 @@
             <UIDropdownMenuItem>Settings</UIDropdownMenuItem>
             <UIDropdownMenuItem>Support</UIDropdownMenuItem>
             <UIDropdownMenuSeparator/>
-            <UIDropdownMenuItem>Logout</UIDropdownMenuItem>
+            <UIDropdownMenuItem @click="logout">Выйти</UIDropdownMenuItem>
           </UIDropdownMenuContent>
         </UIDropdownMenu>
       </header>
@@ -127,12 +128,16 @@
 
 <script lang="ts" setup>
 import {useProductStore} from "~/store/product.store";
+import {useUserStore} from "~/store/user.auth";
 
 definePageMeta({
   layout: 'admin',
 });
 const popupState = useState('popupState');
+const searchQuery = ref('');
+const router = useRouter();
 
+const authStore = useUserStore();
 const productStore = useProductStore();
 
 onBeforeMount(async () => {
@@ -140,4 +145,25 @@ onBeforeMount(async () => {
   await productStore.getAllCategory();
   await productStore.getAllFilter();
 });
+
+const logout = async () => {
+  await authStore.logout().then(() => {
+    router.push('/login')
+  })
+}
+
+
+const searchProducts = async () => {
+
+  try {
+    await productStore.searchProducts(searchQuery.value).then(() => {
+      router.push('/admin/products');
+    })
+  } catch (error: Error | any) {
+    console.error('Ошибка при поиске продуктов:', error.message);
+  }
+};
+
+// Используем debounce для задержки выполнения функции поиска
+const debouncedSearch = useDebounce(searchProducts, 300);
 </script>

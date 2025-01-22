@@ -11,7 +11,18 @@ export default defineEventHandler(async (event) => {
             weight: true,
             type: true,
             composition: true,
-            params: true,
+            params: {
+                select: {
+                    name: true,
+                    filter: {
+                        select: {
+                            id: true,
+                            name: true,
+                            show: true
+                        },
+                    },
+                },
+            },
             color: true,
             categoryId: true,
         },

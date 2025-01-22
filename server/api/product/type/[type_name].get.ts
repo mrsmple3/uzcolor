@@ -15,6 +15,7 @@ export default defineEventHandler((event) => {
             composition: true,
             color: true,
             categoryId: true,
+            show: true,
         },
         where: {
             type: type_name

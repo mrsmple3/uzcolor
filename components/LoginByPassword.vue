@@ -34,9 +34,9 @@
 </template>
 
 <script lang="ts" setup>
-definePageMeta({
-  layout: "popup",
-});
+// definePageMeta({
+//   layout: "popup",
+// });
 import {defineRule, ErrorMessage, Field, useForm} from "vee-validate";
 import {required} from "@vee-validate/rules";
 import {useUserStore} from "~/store/user.auth";
@@ -61,10 +61,12 @@ const popupActive = useState('popupState');
 const popupSubmit = handleSubmit(async () => {
   try {
     await userStore.login(inputData.value.title, inputData.value.password)
-        .then(() => {
-          popupActive.value.autorisation.login_by_password = false;
-          router.push("/user/login");
-          toast.add({title: "Вы успешно вошли ", type: "success"});
+        .then(async () => {
+          await userStore.initAuth().then(() => {
+            popupActive.value.autorisation.login_by_password = false;
+            router.push("/user/login");
+            toast.add({title: "Вы успешно вошли ", type: "success"});
+          })
         });
   } catch (error) {
     toast.add({title: "Что то пошло не так " + error.message, type: "error"});

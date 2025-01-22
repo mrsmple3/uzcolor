@@ -11,39 +11,60 @@
       </div>
       <ErrorMessage class="text-red-600" name="name"/>
     </div>
-    <div v-if="uploadedFiles.length > 0" class="input__container">
+    <div v-if="inputData.files.length > 0" class="input__container">
       <label>Загруженные файлы</label>
-      <div v-for="(file, index) in uploadedFiles" :key="index" class="show__files">
-        {{ file.file.name }}
+      <div v-for="(file, index) in inputData.files" :key="index" class="show__files">
+        {{ file }}
         <div class="flex items-center gap-4">
-          <a :download="file.name" :href="file.url" class="download-file" target="_blank">Скачать</a>
+          <a :download="file" :href="file" class="download-file" target="_blank">Скачать</a>
           <button class="remove-file" @click="removeFile(index)">Удалить</button>
         </div>
       </div>
     </div>
+    <button class="btn" @click="submit">Сохранить данные</button>
   </div>
 </template>
 
 <script lang="ts" setup>
 import {ErrorMessage, Field} from "vee-validate";
+import {type User, useUserStore} from "~/store/user.auth";
 
-const handleFileUpload = (event: Event) => {
+const authStore = useUserStore();
+
+const inputData = ref<User>(authStore.userGetter);
+
+const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files) {
     for (let i = 0; i < target.files.length; i++) {
       const file = target.files[i];
-      const url = URL.createObjectURL(file);
-      uploadedFiles.value.push({file, url});
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await $fetch("/api/media/", {
+        method: "POST",
+        body: formData,
+      });
+
+      inputData.value.files.push(response.body.filePath);
     }
-    console.log(uploadedFiles.value);
   }
 };
 
-const uploadedFiles = ref<{ file: File, url: string }[]>([]);
+const submit = async () => {
+  await authStore.updateUser({
+    id: inputData.value.id,
+    files: inputData.value.files
+  })
+};
 
-const removeFile = (index: number) => {
-  URL.revokeObjectURL(uploadedFiles.value[index].url);
-  uploadedFiles.value.splice(index, 1);
+const removeFile = async (index: number) => {
+  await $fetch("/api/media", {
+    method: "DELETE",
+    body: {filePath: inputData.value.files[index]},
+  });
+  inputData.value.files.splice(index, 1);
 };
 </script>
 
@@ -152,5 +173,9 @@ const removeFile = (index: number) => {
     background: url("/imgs/icons/download.svg") no-repeat;
     background-size: cover;
   }
+}
+
+.btn {
+  @include btn(22px, 120px, $primary, #fff);
 }
 </style>

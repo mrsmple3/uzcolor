@@ -19,7 +19,12 @@
         <div class="w-full flex items-start gap-8">
           <div class="w-[20%] flex flex-col space-y-1.5">
             <UILabel for="art">Art</UILabel>
-            <UIInput id="art" v-model="customProduct.art" placeholder="Art"/>
+            <Field id="art" v-model="customProduct.art"
+                   class="text-[0.875rem] bg-transparent px-3 py-2 border border-[#1e293b] rounded-[0.5rem]"
+                   name="art"
+                   rules="required"
+                   type="text"/>
+            <ErrorMessage class="text-red-600" name="art"/>
           </div>
           <div class="flex flex-col space-y-1.5">
             <UILabel for="category">Категория</UILabel>
@@ -104,7 +109,11 @@
           </div>
           <div class="w-[30%] flex flex-col space-y-1.5">
             <UILabel for="price">Цена</UILabel>
-            <UIInput id="price" v-model="customProduct.price" placeholder="Цена"/>
+            <Field id="price" v-model="customProduct.price"
+                   class="text-[0.875rem] bg-transparent px-3 py-2 border border-[#1e293b] rounded-[0.5rem]"
+                   name="price"
+                   placeholder="Цена" rules="required|min:2" type="number"/>
+            <ErrorMessage class="text-red-600" name="price"/>
           </div>
         </div>
         <div class="flex flex-col space-y-1.5">
@@ -118,9 +127,9 @@
         <div class="flex flex-col space-y-1.5">
           <UILabel>Характеристики</UILabel>
           <div v-for="(filter, index) in customProduct.params" class="w-full flex items-center justify-between gap-3">
-            <h5 class="w-[20%] text-[14px]">{{ filter.title }}</h5>
+            <h5 class="w-[20%] text-[14px]">{{ filter.filter.name }}</h5>
             <div class="relative w-[70%]">
-              <UIInput id="shortDescription" v-model="filter.param.name"
+              <UIInput id="shortDescription" v-model="filter.name"
                        :class="{'bg-gray-700': isFilterChangedMode !== index}" :readonly="isFilterChangedMode !== index"
                        class="w-full"
                        placeholder="значение характеристики"/>
@@ -132,8 +141,8 @@
             </UIButton>
           </div>
           <div class="w-full flex items-center justify-between gap-3">
-            <UIInput v-model="newFilter.title" placeholder="Название характеристики"/>
-            <UIInput id="shortDescription" v-model="newFilter.param.name"
+            <UIInput v-model="newFilter.filter.name" placeholder="Название характеристики"/>
+            <UIInput id="shortDescription" v-model="newFilter.name"
                      placeholder="значение характеристики"/>
             <UIButton variant="ghost" @click.prevent="addFilter">
               <UIcon name="material-symbols:add-box"/>
@@ -150,16 +159,24 @@
 </template>
 
 <script lang="ts" setup>
+import {defineRule, ErrorMessage, Field, useForm} from "vee-validate";
+import {min, required} from "@vee-validate/rules";
 import {type DefineProductState, useProductStore} from "~/store/product.store";
+
+defineRule("required", required);
+defineRule("min", min);
+
+const {handleSubmit} = useForm();
 
 const popupState = useState("popupState");
 const productStore = useProductStore();
 
 const customProduct = ref<DefineProductState>(productStore.getCurrentProduct);
 
-const newFilter = ref({title: "", param: {name: ""}});
+const newFilter = ref({name: "", filter: {name: ""}});
 
 const newColor = ref({name: "", img: ""});
+
 const file = ref<File | null>(null);
 
 const currentCategory = ref({
@@ -169,7 +186,7 @@ const currentCategory = ref({
 
 const isFilterChangedMode = ref<null | number>(null);
 
-const updateProduct = async () => {
+const updateProduct = handleSubmit(async () => {
   try {
     await productStore
         .updateProduct({
@@ -188,14 +205,14 @@ const updateProduct = async () => {
           show: customProduct.value.show,
         })
         .then(async () => {
-          await productStore.getAllProducts().then(() => {
-            popupState.value.isEditProductPopup = false;
-          });
+          await productStore.getAllProducts();
+          await productStore.getAllFilter();
+          popupState.value.isEditProductPopup = false;
         });
   } catch (e) {
     console.error(e);
   }
-};
+});
 
 const addColor = async () => {
   if (newColor.value.name && file.value) {
@@ -241,20 +258,17 @@ const updateCategory = (categoryItem) => {
 };
 
 const addFilter = () => {
-  if (newFilter.value.title && newFilter.value.param.name) {
-    customProduct.value.params.push({
-      title: newFilter.value.title,
-      param: {name: newFilter.value.param.name},
-    });
-    newFilter.value = {title: "", param: {name: ""}};
+  if (newFilter.value.name && newFilter.value.filter.name) {
+    customProduct.value.params.push(newFilter.value);
+    newFilter.value = {name: "", filter: {name: ""}};
   }
 }
 
 const changeFilterValue = (filter, index) => {
   if (isFilterChangedMode.value !== null) {
     customProduct.value.params = customProduct.value.params.map((item) => {
-      if (item.title === filter.title) {
-        item.param.name = filter.param.name;
+      if (item.name === filter.name) {
+        item.name = filter.name;
       }
       return item;
     });
@@ -275,6 +289,8 @@ const deleteFromParams = (index) => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  max-height: 90vh;
+  overflow-y: auto;
   z-index: 10;
   background-color: #000;
 }

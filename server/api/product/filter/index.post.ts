@@ -16,11 +16,11 @@ export default defineEventHandler(async (event) => {
         filters.forEach(filter => {
             if (filterChecked(filter.filters)) {
                 filteredProducts = filteredProducts.filter(product => {
-                    const productParam = product.params.find(param => param.title === filter.name);
+                    const productParam = product.params.find(param => param.filter.name === filter.name);
                     if (!productParam) return false;
 
                     return filter.filters.some(filterItem => {
-                        return filterItem.checked && productParam.param.name === filterItem.name;
+                        return filterItem.checked && productParam.param.filter.name === filterItem.name;
                     });
                 });
             }

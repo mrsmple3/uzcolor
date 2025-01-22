@@ -28,7 +28,6 @@ export default defineEventHandler(async (event) => {
         .replace(/\//g, "-")}`;
 
     const uploadDir = join(process.cwd(), "public", relativeUploadDir);
-
     try {
         await stat(uploadDir);
     } catch (e: any) {

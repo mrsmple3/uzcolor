@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar">
+  <form class="sidebar" @submit="submitOrder">
     <h3 class="title">Общая стоимость</h3>
     <p class="sum">Сумма</p>
     <h4 class="price">{{ totalPrice }} <span>сум</span></h4>
@@ -13,63 +13,67 @@
     </div>
     <div class="input__container">
       <UILabel for="company">Ваша компания</UILabel>
-      <Field id="company" v-model="inputData.name" name="company" placeholder="Введите наименование"
-             rules="required"
+      <Field id="company" v-model="inputData.companyName" name="company" placeholder="Введите наименование"
              type="text"/>
-      <ErrorMessage class="text-red-600" name="name"/>
+      <ErrorMessage class="text-red-600" name="company"/>
     </div>
     <div class="input__container">
-      <v for="phone">Телефон</v>
-      <Field id="phone" v-model="inputData.name" name="phone" placeholder="Номер телефона"
+      <UILabel for="phone">Телефон</UILabel>
+      <Field id="phone" v-model="inputData.phone" name="phone" placeholder="Номер телефона"
              rules="required"
              type="text"/>
-      <ErrorMessage class="text-red-600" name="name"/>
+      <ErrorMessage class="text-red-600" name="phone"/>
     </div>
     <div class="input__container">
       <UILabel for="email">Электронная почта</UILabel>
-      <Field id="email" v-model="inputData.name" name="email" placeholder="Email"
+      <Field id="email" v-model="inputData.email" name="email" placeholder="Email"
              rules="required"
              type="text"/>
-      <ErrorMessage class="text-red-600" name="name"/>
+      <ErrorMessage class="text-red-600" name="email"/>
     </div>
     <div class="input__container">
       <UILabel for="address">Адрес</UILabel>
-      <Field id="address" v-model="inputData.name" name="address" placeholder="Введите адрес"
+      <Field id="address" v-model="inputData.address" name="address" placeholder="Введите адрес"
              rules="required"
              type="text"/>
-      <ErrorMessage class="text-red-600" name="name"/>
+      <ErrorMessage class="text-red-600" name="address"/>
     </div>
     <div class="input__container last-child">
       <label for="file-upload">Реквизиты</label>
       <div class="input__replacer">
         <label class="custom-file-upload" for="file-upload">Прикрепить файлы</label>
-        <Field id="file-upload" name="file-upload" placeholder="Введите адрес"
-               rules="required" type="file"
-               @change="handleFileUpload"/>
+        <Field id="file-upload" name="file-upload" placeholder="Введите адрес" type="file" @change="handleFileUpload"/>
       </div>
-      <ErrorMessage class="text-red-600" name="name"/>
+      <ErrorMessage class="text-red-600" name="file-upload"/>
     </div>
-    <div v-if="uploadedFiles.length > 0" class="input__container">
+    <div v-if="inputData.files.length > 0" class="input__container">
       <label>Загруженные файлы</label>
-      <div v-for="(file, index) in uploadedFiles" :key="index" class="show__files">
-        {{ file.file.name }}
+      <div v-for="(file, index) in inputData.files" :key="index" class="show__files">
+        {{ file }}
         <div class="flex items-center gap-4">
-          <a :download="file.name" :href="file.url" class="download-file" target="_blank">Скачать</a>
+          <a :download="file" :href="file" class="download-file" target="_blank">Скачать</a>
           <button class="remove-file" @click="removeFile(index)">Удалить</button>
         </div>
       </div>
     </div>
     <div class="checkboxes">
-      <UCheckbox :label="'Самовывоз со склада'" :ui="{background: '!bg-[#fff]', label: 'font-light !text-black/80'}"
-                 class="" inputClass="form__material__checkbox"/>
-      <UCheckbox :label="'Транспортная компания'" :ui="{background: '!bg-[#fff]', label: 'font-light !text-black/80'}"
-                 inputClass="form__material__checkbox"/>
+      <UCheckbox :label="'Самовывоз со склада'" :model-value="statusOrder === 'Самовывоз со склада'"
+                 :ui="{background: '!bg-[#fff]', label: 'font-light !text-black/80'}"
+                 inputClass="form__material__checkbox" @change="statusOrder = 'Самовывоз со склада'"/>
+      <UCheckbox :label="'Транспортная компания'" :model-value="statusOrder === 'Транспортная компания'"
+                 :ui="{background: '!bg-[#fff]', label: 'font-light !text-black/80'}"
+                 inputClass="form__material__checkbox" @change="statusOrder = 'Транспортная компания'"/>
     </div>
-    <button class="btn" @click="handleSubmit">Оформить заказ</button>
-  </div>
+    <button class="btn" type="submit">Оформить заказ</button>
+  </form>
 </template>
 
 <script lang="ts" setup>
+import {type User, useUserStore} from "~/store/user.auth";
+import {defineRule, ErrorMessage, Field, useForm} from "vee-validate";
+import {required} from "@vee-validate/rules";
+import {useProductStore} from "~/store/product.store";
+
 const props = defineProps({
   totalPrice: {
     type: Number,
@@ -77,38 +81,74 @@ const props = defineProps({
   },
 });
 
-import {defineRule, ErrorMessage, Field, useForm} from "vee-validate";
-import {required} from "@vee-validate/rules";
+const router = useRouter();
 
-const inputData = ref({
-  name: '',
-  companyName: '',
-  phone: '',
-  email: '',
-  address: ''
-});
+const toast = useToast();
+
+const statusOrder = ref<string>("Самовывоз со склада");
+
+const productStore = useProductStore();
+const authStore = useUserStore();
+
+const inputData = ref<User>(authStore.userGetter);
 
 defineRule("required", required);
 
 const {handleSubmit} = useForm();
 
-const uploadedFiles = ref<{ file: File, url: string }[]>([]);
 
-const handleFileUpload = (event: Event) => {
+const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files) {
     for (let i = 0; i < target.files.length; i++) {
       const file = target.files[i];
-      const url = URL.createObjectURL(file);
-      uploadedFiles.value.push({file, url});
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await $fetch("/api/media", {
+        method: "POST",
+        body: formData,
+      });
+
+      inputData.value.files.push(response.body.filePath);
     }
-    console.log(uploadedFiles.value);
   }
 };
 
-const removeFile = (index: number) => {
-  URL.revokeObjectURL(uploadedFiles.value[index].url);
-  uploadedFiles.value.splice(index, 1);
+const orderSend = async () => {
+  await authStore.updateUser({
+    id: inputData.value.id,
+    name: inputData.value.name,
+    phone: inputData.value.phone,
+    email: inputData.value.email,
+    address: inputData.value.address,
+    company: inputData.value.companyName,
+    files: inputData.value.files
+  }).then(async () => {
+    await authStore.createOrder({
+      userId: authStore.cartGetter.userId,
+      totalAmount: authStore.cartGetter.items.length,
+      totalPrice: props.totalPrice,
+      type: statusOrder.value,
+      items: authStore.cartGetter.items
+    }).then(async () => {
+      await authStore.deleteAllCartItemsOnUser(authStore.userGetter.id).then(() => {
+        router.push("/");
+        toast.add({title: "Заказ был совершон", type: "success"});
+      })
+    })
+  })
+}
+
+const submitOrder = handleSubmit(orderSend);
+
+const removeFile = async (index: number) => {
+  await $fetch("/api/media", {
+    method: "DELETE",
+    body: {filePath: inputData.value.files[index]},
+  });
+  inputData.value.files.splice(index, 1);
 };
 </script>
 

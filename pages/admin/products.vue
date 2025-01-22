@@ -1,11 +1,11 @@
 <template>
-  <div class="div">
-    <div v-if="productStore.productsGetter" class="flex flex-1 flex-col gap-4 p-4">
+  <div>
+    <div v-if="productStore.productsGetter.length > 0" class="flex flex-1 flex-col gap-4 p-4">
       <div class="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
         <main class="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           <UITabs default-value="all">
             <div class="flex items-center">
-              <UITabsList>
+              <UITabsList class="max-w-[1000px] overflow-x-auto no-scroll">
                 <UITabsTrigger value="all">Все продукты</UITabsTrigger>
 
                 <UITabsTrigger v-for="category in productStore.categoryGetter" :key="category.id"
@@ -16,7 +16,7 @@
               <div class="ml-auto flex items-center gap-2">
                 <UIButton class="h-7 gap-1" size="sm" @click="addProduct">
                   <UIcon class="h-3.5 w-3.5" name="ic:baseline-plus"/>
-                  <span class="sr-only sm:not-sr-only sm:whitespace-nowrap"> Add Product </span>
+                  <span class="sr-only sm:not-sr-only sm:whitespace-nowrap"> Добавить </span>
                 </UIButton>
               </div>
             </div>
@@ -78,8 +78,8 @@
                             </UIDropdownMenuTrigger>
                             <UIDropdownMenuContent align="end">
                               <UIDropdownMenuLabel>Actions</UIDropdownMenuLabel>
-                              <UIDropdownMenuItem @click="editProductPopup(product.id)">Edit</UIDropdownMenuItem>
-                              <UIDropdownMenuItem @click="deleteCurrentProduct(product.id)">Delete</UIDropdownMenuItem>
+                              <UIDropdownMenuItem @click="editProductPopup(product.id)">Изменить</UIDropdownMenuItem>
+                              <UIDropdownMenuItem @click="deleteCurrentProduct(product.id)">Удалить</UIDropdownMenuItem>
                             </UIDropdownMenuContent>
                           </UIDropdownMenu>
                         </UITableCell>
@@ -106,27 +106,27 @@
                         <UITableHead>№</UITableHead>
                         <UITableHead>Название</UITableHead>
                         <UITableHead>Показывать</UITableHead>
-                        <UITableHead class="text-end" @click="addFilter">
-                          <UIBadge class="bg-white">
-                            <UIcon class="h-3.5 w-3.5" name="ic:baseline-plus"/>
-                          </UIBadge>
+                        <UITableHead class="text-end">
+                          Изменения
                         </UITableHead>
                       </UITableRow>
                     </UITableHeader>
                     <UITableBody>
-                      <UITableRow v-for="(filter, index) in productStore.filterGetter" :key="filter.id">
+                      <UITableRow v-for="(filter, index) in productStore.filterGetter"
+                                  :key="filter.id" :class="{'bg-gray-800': isChangedFilter === index}">
                         <UITableCell class="font-medium">
                           {{ index + 1 }}
                         </UITableCell>
                         <UITableCell>
-                          <UIBadge variant="outline">
+                          <UIBadge v-if="isChangedFilter !== index" variant="outline">
                             {{ filter.name }}
                           </UIBadge>
+                          <UIInput v-else v-model="filter.name" class="max-w-[120px]"/>
                         </UITableCell>
                         <UITableCell>
                           <UISwitch :checked="filter.show" @update:checked="changeShowInFilter(index)"/>
                         </UITableCell>
-                        <UITableCell class="text-end">
+                        <UITableCell v-if="isChangedFilter !== index" class="text-end">
                           <UIDropdownMenu>
                             <UIDropdownMenuTrigger as-child>
                               <UIButton aria-haspopup="true" size="icon" variant="ghost">
@@ -136,10 +136,16 @@
                             </UIDropdownMenuTrigger>
                             <UIDropdownMenuContent align="end">
                               <UIDropdownMenuLabel>Actions</UIDropdownMenuLabel>
-                              <UIDropdownMenuItem>Edit</UIDropdownMenuItem>
-                              <UIDropdownMenuItem @click="deleteFilter(filter.id)">Delete</UIDropdownMenuItem>
+                              <UIDropdownMenuItem @click="isChangedFilter = index">Изменить</UIDropdownMenuItem>
+                              <UIDropdownMenuItem @click="deleteFilter(filter.id)">Удалить</UIDropdownMenuItem>
                             </UIDropdownMenuContent>
                           </UIDropdownMenu>
+                        </UITableCell>
+                        <UITableCell v-else class="text-end"
+                                     @click="isChangedFilter = null; productStore.updateFilter(filter)">
+                          <UIButton aria-haspopup="true" size="icon" variant="ghost">
+                            <UIcon class="w-5 h-5" name="ion:checkmark-round"/>
+                          </UIButton>
                         </UITableCell>
                       </UITableRow>
                     </UITableBody>
@@ -207,8 +213,8 @@
                             </UIDropdownMenuTrigger>
                             <UIDropdownMenuContent align="end">
                               <UIDropdownMenuLabel>Actions</UIDropdownMenuLabel>
-                              <UIDropdownMenuItem @click="editProductPopup(product.id)">Edit</UIDropdownMenuItem>
-                              <UIDropdownMenuItem @click="deleteCurrentProduct(product.id)">Delete</UIDropdownMenuItem>
+                              <UIDropdownMenuItem @click="editProductPopup(product.id)">Изменить</UIDropdownMenuItem>
+                              <UIDropdownMenuItem @click="deleteCurrentProduct(product.id)">Удалить</UIDropdownMenuItem>
                             </UIDropdownMenuContent>
                           </UIDropdownMenu>
                         </UITableCell>
@@ -238,7 +244,7 @@
         <div class="flex flex-col items-center gap-1 text-center">
           <h3 class="text-2xl font-bold tracking-tight">You have no products</h3>
           <p class="text-sm text-muted-foreground">You can start selling as soon as you add a product.</p>
-          <UIButton class="mt-4"> Add Product</UIButton>
+          <UIButton class="mt-4" @click="addProduct"> Add Product</UIButton>
         </div>
       </div>
     </main>
@@ -255,6 +261,8 @@ definePageMeta({
 const productStore = useProductStore();
 
 const popupState = useState<any>("popupState");
+
+const isChangedFilter = ref<null | number>(null)
 
 const toast = useToast();
 
@@ -278,7 +286,12 @@ const editProductPopup = async (productId: string) => {
     toast.add({title: "Ошибка " + error.message, color: "red"});
   }
 };
+
 const addProduct = async () => {
+  if (productStore.categoryGetter.length === 0) {
+    toast.add({title: "Сначала добавьте категорию", color: "red"});
+    return;
+  }
   await productStore
       .setProduct({
         name: "Новый продукт",
@@ -301,9 +314,6 @@ const addProduct = async () => {
         await productStore.getAllProducts();
       });
 };
-const addFilter = async () => {
-
-}
 
 const changeShowInFilter = async (index) => {
   const currentFilter = productStore.filterGetter[index];
@@ -318,6 +328,7 @@ const changeShowInFilter = async (index) => {
     toast.add({title: "Ошибка " + error.message, color: "red"});
   }
 }
+
 const deleteFilter = async (id: string) => {
   try {
     await productStore.deleteFilter(id);
@@ -327,4 +338,10 @@ const deleteFilter = async (id: string) => {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.no-scroll {
+  &::-webkit-scrollbar {
+    display: none; /* Для Chrome, Safari и Opera */
+  }
+}
+</style>

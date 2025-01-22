@@ -1,4 +1,5 @@
-import type {ProductState} from "~/store/product.store";
+import type {Order, OrderItem, ProductState} from "~/store/product.store";
+import {useFetchApi} from "~/utils/api";
 
 export interface User {
     id: string;
@@ -6,6 +7,11 @@ export interface User {
     phone: string;
     email: string;
     password: string;
+    company: string;
+    role: string;
+    address: string;
+    files: string[];
+    updatedAt: string;
 }
 
 export interface Favorite {
@@ -40,7 +46,9 @@ const defaultValue: {
     accessToken: string;
     savedProducts: ProductState[],
     cartItem: CartItem,
-    cart: Cart
+    cart: Cart,
+    orders: Order[],
+    users: User[],
 } = {
     user: {
         id: "",
@@ -48,6 +56,10 @@ const defaultValue: {
         phone: "",
         email: "",
         password: "",
+        company: "",
+        role: "",
+        address: "",
+        files: [],
     },
     accessToken: "",
     savedProducts: [],
@@ -63,6 +75,8 @@ const defaultValue: {
         userId: "",
         items: [],
     },
+    orders: [],
+    users: [],
 };
 export const useUserStore = defineStore("user", {
     state: () => defaultValue,
@@ -73,8 +87,13 @@ export const useUserStore = defineStore("user", {
         totalSavedProducts: (state): number => state.savedProducts.length,
         cartGetter: (state): Cart => state.cart,
         totalCartItems: (state): number => state.cart.items.length,
+        getCartItemByIdProduct: (state) => (productId: string) => state.cart.items.find((item) => item.productId === productId),
         isAuthenticated: (state): boolean => !!state.accessToken,
         isSavedProduct: (state) => (productId: string) => state.savedProducts.some((product) => product.id === productId),
+        orderGetter: (state) => state.orders.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
+        usersGetter: (state): User[] => state.users,
+        userById: (state) => (userId: string) => state.users.find((user) => user.id === userId),
+        userNameById: (state) => (userId: string) => state.users.find((user) => user.id === userId)?.name,
     },
     actions: {
         async login(title: string, password: string, role: string = 'USER') {
@@ -88,6 +107,9 @@ export const useUserStore = defineStore("user", {
                             role: role
                         },
                     });
+                    if (!response.access_token)
+                        throw new Error(response.message);
+
                     this.$patch({user: response.user, accessToken: response.access_token});
                 }
                 if (title.includes("@")) {
@@ -98,18 +120,24 @@ export const useUserStore = defineStore("user", {
                             password: password
                         },
                     });
+                    if (!response.access_token)
+                        throw new Error(response.message);
+
                     this.$patch({user: response.user, accessToken: response.access_token});
                 } else {
                     console.log("Phone number");
                 }
             } catch (error) {
-                console.error("Error logging in:", error);
                 throw error;
             }
         },
         async refreshToken() {
             try {
                 const response = await $fetch<RefreshToken>("/api/auth/refresh");
+
+                if (!response.accessToken)
+                    return "Access token not found"
+
                 this.$patch({accessToken: response.accessToken});
             } catch (error) {
                 console.error("Error refreshing token:", error);
@@ -118,7 +146,7 @@ export const useUserStore = defineStore("user", {
         },
         async logout() {
             try {
-                await this.useFetchApi('/api/auth/logout', {
+                await useFetchApi('/api/auth/logout', {
                     method: 'POST',
                 });
                 this.$patch({user: defaultValue.user, accessToken: defaultValue.accessToken});
@@ -129,14 +157,15 @@ export const useUserStore = defineStore("user", {
         },
         async initAuth() {
             try {
-                await this.refreshToken();
-                await this.getUser().then(() => {
-                    if (!this.isAdmin) {
-                        this.getCarts(this.userGetter.id);
-                        this.getFavorites(this.userGetter.id);
+                const refresh = await this.refreshToken();
+                if (refresh === "Access token not found") {
+                    return;
+                }
+                await this.getUser().then(async () => {
+                    if (this.isAdmin) {
+                        await this.getAllUsers();
+                        await this.getOrders();
                     }
-                    this.getCarts(this.userGetter.id);
-                    this.getFavorites(this.userGetter.id);
                 })
             } catch (error) {
                 console.error("Error initializing auth:", error);
@@ -145,7 +174,7 @@ export const useUserStore = defineStore("user", {
         },
         async getUser() {
             try {
-                const response = (await this.useFetchApi("/api/auth/user")) as User;
+                const response = (await useFetchApi("/api/auth/user")) as User;
                 this.$patch({user: response});
             } catch (error) {
                 console.error("Error getting user:", error);
@@ -154,11 +183,23 @@ export const useUserStore = defineStore("user", {
         },
         async updateProfile(user: User) {
             try {
-                const response: User = await this.useFetchApi(`/api/auth/${user.id}`, {
+                const response: User = await useFetchApi(`/api/auth/${user.id}`, {
                     method: "PUT",
                     body: user,
                 });
-                this.$patch({user: response});
+                this.$patch({user: response.body});
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                throw error;
+            }
+        },
+        async updateUser(user: User) {
+            try {
+                const response: User = await useFetchApi(`/api/user`, {
+                    method: "PUT",
+                    body: user,
+                });
+                this.$patch({user: response.body});
             } catch (error) {
                 console.error("Error updating profile:", error);
                 throw error;
@@ -166,7 +207,7 @@ export const useUserStore = defineStore("user", {
         },
         async changePassword(userId: string, currentPassword: string, newPassword: string) {
             try {
-                await this.useFetchApi(`/api/auth/password/${userId}`, {
+                await useFetchApi(`/api/auth/password/${userId}`, {
                     method: "PUT",
                     body: {currentPassword: currentPassword, newPassword: newPassword},
                 });
@@ -220,16 +261,6 @@ export const useUserStore = defineStore("user", {
                 throw error;
             }
         },
-        async useFetchApi(url: string, options: RequestInit = {}) {
-            return await $fetch(url, {
-                ...options,
-                headers: {
-                    ...options.headers,
-                    Authorization: `Bearer ${this.$state.accessToken}`,
-                },
-                method: options.method as "POST" | "GET" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE" | undefined,
-            });
-        },
         async setCart(userId: string, productId: string, count: number, color: any, price: number) {
             try {
                 const response: CartItem = await $fetch(`/api/user/cart/${userId}`, {
@@ -238,9 +269,10 @@ export const useUserStore = defineStore("user", {
                         "Content-Type": "application/json",
                     },
                     body: {productId, count, color, price},
-                }).then(() => {
-                    this.getCarts(this.userGetter.id);
+                }).then(async () => {
+                    await this.getCarts(this.userGetter.id);
                 });
+                console.log(response);
             } catch (error) {
                 console.error("Error setting cart:", error);
                 throw error;
@@ -267,6 +299,17 @@ export const useUserStore = defineStore("user", {
                 })
             } catch (error) {
                 console.error("Error deleting cart item:", error);
+                throw error;
+            }
+        },
+        async deleteAllCartItemsOnUser(userId: string) {
+            try {
+                await $fetch(`/api/user/cart/${userId}`, {
+                    method: 'DELETE',
+                });
+                this.$patch({cart: defaultValue.cart});
+            } catch (error) {
+                console.error("Error deleting all cart items:", error);
                 throw error;
             }
         },
@@ -298,6 +341,65 @@ export const useUserStore = defineStore("user", {
                 throw error;
             }
         },
-
+        async createOrder(order: Order) {
+            try {
+                const response = await useFetchApi('/api/order', {
+                    method: 'POST',
+                    body: order,
+                });
+                this.$patch({orders: response});
+            } catch (error) {
+                console.error('Error creating order:', error);
+                throw error;
+            }
+        },
+        async getOrders() {
+            try {
+                const response = await useFetchApi('/api/order');
+                this.$patch({orders: response});
+            } catch (error) {
+                console.error('Error getting orders:', error);
+                throw error;
+            }
+        },
+        async getOrderByUserId(userId: string) {
+            try {
+                const response = await useFetchApi(`/api/order/${userId}`);
+                this.$patch({orders: response});
+            } catch (error) {
+                console.error('Error getting order by id:', error);
+                throw error;
+            }
+        },
+        async deleteOrderItem(itemId: string) {
+            try {
+                return await useFetchApi(`/api/order/${itemId}`, {
+                    method: 'DELETE',
+                });
+            } catch (error) {
+                console.error('Error deleting order item:', error);
+                throw error;
+            }
+        },
+        async getAllUsers() {
+            try {
+                const response = await useFetchApi('/api/user');
+                this.$patch({users: response});
+            } catch (error) {
+                console.error('Error getting all users:', error);
+                throw error;
+            }
+        },
+        async changeOrder(orderItem: OrderItem) {
+            try {
+                return await useFetchApi(`/api/order/${orderItem.id}`, {
+                    method: 'PUT',
+                    body: orderItem,
+                });
+            } catch (error) {
+                console.error('Error changing order:', error);
+                throw error;
+            }
+        }
     },
 });

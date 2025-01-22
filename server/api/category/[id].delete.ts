@@ -1,7 +1,9 @@
 import {prisma} from "~/server/db";
+import checkAdmin from "~/server/utils/check";
 
 export default defineEventHandler(async (event) => {
     try {
+        await checkAdmin(event);
         const {id} = event.context.params;
 
         // Ensure the id is provided
@@ -9,8 +11,13 @@ export default defineEventHandler(async (event) => {
             return {message: 'Идентификатор категории обязателен'};
         }
 
+        // Delete associated order items
+        await prisma.orderItem.deleteMany({
+            where: {product: {categoryId: id}},
+        });
+
         // Delete associated products
-        await prisma.product.deleteMany({
+        await prisma.defineProduct.deleteMany({
             where: {categoryId: id},
         });
 

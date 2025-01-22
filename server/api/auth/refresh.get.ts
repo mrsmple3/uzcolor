@@ -1,4 +1,4 @@
-import {getCookie, sendError} from 'h3';
+import {getCookie} from 'h3';
 import {getRefreshTokenByToken} from "~/server/db/refreshTokens";
 import {generateTokens} from "~/server/utils/jwt";
 import {getUserById} from "~/server/db/users";
@@ -8,12 +8,12 @@ export default defineEventHandler(async (event) => {
         const refreshToken = getCookie(event, 'refreshToken');
 
         if (!refreshToken) {
-            return {message: 'Токен не найден'};
+            return 'Missing required fields';
         }
 
         const rToken = await getRefreshTokenByToken(refreshToken);
         if (!rToken) {
-            return {message: 'Токен не найден'};
+            return 'Токен не найден';
         }
 
         try {
@@ -24,9 +24,9 @@ export default defineEventHandler(async (event) => {
             return {message: 'Токен не найден'};
         }
     } catch (error) {
-        return sendError(event, createError({
+        return createError({
             statusCode: 500,
             message: 'Ошибка обновления токена: ' + error.message
-        }));
+        });
     }
 });

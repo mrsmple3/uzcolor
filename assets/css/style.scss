@@ -837,3 +837,9 @@ input[type="checkbox"] {
     font-weight: 600;
   }
 }
+
+.no-scroll {
+  &::-webkit-scrollbar {
+    display: none; /* Для Chrome, Safari и Opera */
+  }
+}

@@ -52,7 +52,7 @@ const productProp = defineProps({
 
 const isLiked = ref(false);
 const popupStore = useState('popupState');
-let currentImg = ref(productProp.product.color[0].img);
+let currentImg = ref(productProp.product.color.length > 0 ? productProp.product.color[0].img : '/imgs/default-img.webp');
 let activeMaterial = ref<number>(0);
 
 const userStore = useUserStore();

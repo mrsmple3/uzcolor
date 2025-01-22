@@ -28,6 +28,8 @@
 <script lang="ts" setup>
 import {useUserStore} from "~/store/user.auth";
 
+const {loader, clearLoader, clearLoaderTimeout} = usePreloader();
+
 const userStore = useUserStore();
 const totalPrice = ref(0);
 

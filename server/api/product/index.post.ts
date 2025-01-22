@@ -1,15 +1,17 @@
+// server/api/product/index.post.ts
 import {prisma} from "~/server/db";
+import checkAdmin from "~/server/utils/check";
 
 export default defineEventHandler(async (event) => {
     try {
         const body = await readBody(event);
 
-        // Ensure all required fields are provided
+        await checkAdmin(event);
+
         if (!body.name || !body.categoryId) {
             return {message: "Missing required fields"};
         }
 
-        // Check if the category exists
         const category = await prisma.category.findUnique({
             where: {id: body.categoryId},
         });
@@ -18,20 +20,25 @@ export default defineEventHandler(async (event) => {
             return {message: "Category not found"};
         }
 
-        // Create or find filters based on product parameters
+        const filterProducts = [];
         for (const param of body.params) {
-            await prisma.filter.upsert({
-                where: {
-                    name: param.title,
-                },
+            const filter = await prisma.filter.upsert({
+                where: {name: param.filter.name},
                 update: {},
-                create: {
-                    name: param.title,
+                create: {name: param.filter.name},
+            });
+
+            const filterProduct = await prisma.filterProduct.create({
+                data: {
+                    name: param.name,
+                    filterId: filter.id,
+                    defineProductId: body.id,
                 },
             });
+
+            filterProducts.push({id: filterProduct.id});
         }
 
-        // Create the new DefineProduct
         return await prisma.defineProduct.create({
             data: {
                 name: body.name,
@@ -44,7 +51,7 @@ export default defineEventHandler(async (event) => {
                 shortDescription: body.shortDescription,
                 description: body.description,
                 categoryId: body.categoryId,
-                params: body.params,
+                params: {connect: filterProducts},
             },
         });
     } catch (error) {
