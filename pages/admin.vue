@@ -30,6 +30,13 @@
             >
               Пользователи
             </NuxtLink>
+            <NuxtLink
+                active-class="bg-muted text-primary"
+                class="flex items-center gap-3 rounded-lg text-muted-foreground px-3 py-2 transition-all hover:text-primary"
+                to="/admin/content"
+            >
+              Контент
+            </NuxtLink>
           </nav>
         </div>
       </div>
